@@ -1,0 +1,32 @@
+{
+  "name": "dompetku",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
+  },
+  "dependencies": {
+    "@nuxtjs/supabase": "^2.0.1",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@supabase/supabase-js": "^2.84.0",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^27.2.0",
+    "nanoid": "^5.1.6",
+    "node-telegram-bot-api": "^0.66.0",
+    "nuxt": "^4.2.1",
+    "vitest": "^4.0.13",
+    "vue": "^3.5.24",
+    "vue-router": "^4.6.3",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@vite-pwa/nuxt": "^1.0.7"
+  }
+}

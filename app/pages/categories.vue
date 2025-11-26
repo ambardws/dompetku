@@ -1,0 +1,263 @@
+<template>
+  <div class="min-h-screen bg-gray-50 pb-20">
+    <div class="max-w-3xl mx-auto px-4 py-6 sm:py-8">
+      <!-- Header -->
+      <header class="mb-6 bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+        <div class="flex items-center gap-3">
+          <button
+            @click="router.push('/')"
+            class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            title="Back to dashboard"
+          >
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <div>
+            <h1 class="text-xl font-bold text-gray-900">Categories Management</h1>
+            <p class="text-xs text-gray-500">Manage your transaction categories</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Left: Create/Edit Form -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            {{ editingCategory ? 'Edit Category' : 'Create New Category' }}
+          </h2>
+
+          <DCategoryForm
+            :mode="editingCategory ? 'edit' : 'create'"
+            :category="editingCategory || undefined"
+            :loading="isSubmitting"
+            @submit="handleSubmit"
+            @cancel="cancelEdit"
+          />
+        </div>
+
+        <!-- Right: Categories List -->
+        <div class="space-y-4">
+          <!-- Expense Categories -->
+          <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-semibold text-gray-900">
+                Expense Categories
+              </h2>
+              <span class="text-xs text-gray-500">
+                {{ expenseCategories.length }} categories
+              </span>
+            </div>
+
+            <div v-if="isLoading" class="text-center py-6 text-sm text-gray-500">
+              Loading categories...
+            </div>
+
+            <div v-else-if="expenseCategories.length === 0" class="text-center py-6 text-sm text-gray-500">
+              No expense categories yet
+            </div>
+
+            <div v-else class="space-y-2">
+              <DCategoryCard
+                v-for="category in expenseCategories"
+                :key="category.id"
+                :category="category"
+                @edit="startEdit"
+                @delete="confirmDelete"
+              />
+            </div>
+          </div>
+
+          <!-- Income Categories -->
+          <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-semibold text-gray-900">
+                Income Categories
+              </h2>
+              <span class="text-xs text-gray-500">
+                {{ incomeCategories.length }} categories
+              </span>
+            </div>
+
+            <div v-if="isLoading" class="text-center py-6 text-sm text-gray-500">
+              Loading categories...
+            </div>
+
+            <div v-else-if="incomeCategories.length === 0" class="text-center py-6 text-sm text-gray-500">
+              No income categories yet
+            </div>
+
+            <div v-else class="space-y-2">
+              <DCategoryCard
+                v-for="category in incomeCategories"
+                :key="category.id"
+                :category="category"
+                @edit="startEdit"
+                @delete="confirmDelete"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import type { Category } from '~modules/categories/domain/entities/Category'
+import { GetCategoriesUseCase } from '~modules/categories/application/use-cases/GetCategoriesUseCase'
+import { AddCategoryUseCase } from '~modules/categories/application/use-cases/AddCategoryUseCase'
+import { UpdateCategoryUseCase } from '~modules/categories/application/use-cases/UpdateCategoryUseCase'
+import { DeleteCategoryUseCase } from '~modules/categories/application/use-cases/DeleteCategoryUseCase'
+import { InitializeDefaultCategoriesUseCase } from '~modules/categories/application/use-cases/InitializeDefaultCategoriesUseCase'
+import DCategoryForm from '~modules/categories/ui/organisms/DCategoryForm.vue'
+import DCategoryCard from '~modules/categories/ui/molecules/DCategoryCard.vue'
+import { useAuth } from '~shared/composables/useAuth'
+import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
+import { useToast } from '~shared/composables/useToast'
+
+// Add auth middleware
+definePageMeta({
+  middleware: [
+    function (to, from) {
+      const { user } = useAuth()
+      if (!user.value) {
+        return navigateTo('/login')
+      }
+      
+      if (user.value) {
+        return true
+      }
+    }
+  ]
+})
+
+const router = useRouter()
+const { user } = useAuth()
+const categoryRepository = useCategoryRepository()
+const toast = useToast()
+
+const categories = ref<Category[]>([])
+const editingCategory = ref<Category | null>(null)
+const isLoading = ref(false)
+const isSubmitting = ref(false)
+
+const expenseCategories = computed(() =>
+  categories.value.filter((cat) => cat.type === 'expense')
+)
+
+const incomeCategories = computed(() =>
+  categories.value.filter((cat) => cat.type === 'income')
+)
+
+async function loadCategories() {
+  if (!user.value?.id) return
+
+  isLoading.value = true
+  try {
+    const getCategoriesUseCase = new GetCategoriesUseCase(categoryRepository)
+    categories.value = await getCategoriesUseCase.execute({ userId: user.value.id })
+
+    // Initialize defaults if no categories
+    if (categories.value.length === 0) {
+      const initUseCase = new InitializeDefaultCategoriesUseCase(categoryRepository)
+      categories.value = await initUseCase.execute(user.value.id)
+    }
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+    toast.error('Failed to load categories')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+async function handleSubmit(data: {
+  name: string
+  icon: string
+  color: string
+  type: 'income' | 'expense'
+}) {
+  console.log(user.value)
+  if (!user.value?.id) return
+
+  isSubmitting.value = true
+  try {
+    if (editingCategory.value) {
+      // Update existing category
+      const updateUseCase = new UpdateCategoryUseCase(categoryRepository)
+      const updated = await updateUseCase.execute(editingCategory.value.id, {
+        name: data.name,
+        icon: data.icon,
+        color: data.color,
+      })
+
+      // Update in list
+      const index = categories.value.findIndex((c) => c.id === updated.id)
+      if (index !== -1) {
+        categories.value[index] = updated
+      }
+
+      toast.success('Category updated successfully')
+      editingCategory.value = null
+    } else {
+      // Create new category
+      const addUseCase = new AddCategoryUseCase(categoryRepository)
+      const newCategory = await addUseCase.execute({
+        userId: user.value.id,
+        name: data.name,
+        icon: data.icon,
+        color: data.color,
+        type: data.type,
+      })
+
+      categories.value.push(newCategory)
+      toast.success('Category created successfully')
+    }
+  } catch (error) {
+    console.error('Failed to save category:', error)
+    toast.error(error instanceof Error ? error.message : 'Failed to save category')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+function startEdit(category: Category) {
+  editingCategory.value = category
+  // Scroll to form
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function cancelEdit() {
+  editingCategory.value = null
+}
+
+async function confirmDelete(category: Category) {
+  if (!confirm(`Are you sure you want to delete "${category.name}"?`)) {
+    return
+  }
+
+  try {
+    const deleteUseCase = new DeleteCategoryUseCase(categoryRepository)
+    await deleteUseCase.execute(category.id)
+
+    // Remove from list
+    categories.value = categories.value.filter((c) => c.id !== category.id)
+
+    // Cancel edit if deleting the category being edited
+    if (editingCategory.value?.id === category.id) {
+      editingCategory.value = null
+    }
+
+    toast.success('Category deleted successfully')
+  } catch (error) {
+    console.error('Failed to delete category:', error)
+    toast.error(error instanceof Error ? error.message : 'Failed to delete category')
+  }
+}
+
+onMounted(() => {
+  loadCategories()
+})
+</script>
