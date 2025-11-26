@@ -120,5 +120,12 @@ export default defineNuxtConfig({
   // Build configuration
   build: {
     transpile: []
+  },
+
+  // Vite configuration
+  vite: {
+    server: {
+      allowedHosts: ['d5e500964643.ngrok-free.app']
+    }
   }
 })

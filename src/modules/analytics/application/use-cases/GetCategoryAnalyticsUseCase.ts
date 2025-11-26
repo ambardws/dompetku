@@ -30,8 +30,9 @@ export class GetCategoryAnalyticsUseCase {
     // Get all categories for the user
     const categories = await this.categoryRepository.getByUserId(input.userId)
 
-    // Create a map for quick category lookup
-    const categoryMap = new Map(categories.map((cat) => [cat.id, cat]))
+    // Create maps for quick category lookup (by ID and by name)
+    const categoryByIdMap = new Map(categories.map((cat) => [cat.id, cat]))
+    const categoryByNameMap = new Map(categories.map((cat) => [cat.name.toLowerCase(), cat]))
 
     // Calculate totals
     let totalIncome = 0
@@ -47,7 +48,8 @@ export class GetCategoryAnalyticsUseCase {
         this.aggregateTransaction(
           transaction,
           incomeByCategoryMap,
-          categoryMap,
+          categoryByIdMap,
+          categoryByNameMap,
           'income'
         )
       } else {
@@ -55,7 +57,8 @@ export class GetCategoryAnalyticsUseCase {
         this.aggregateTransaction(
           transaction,
           expenseByCategoryMap,
-          categoryMap,
+          categoryByIdMap,
+          categoryByNameMap,
           'expense'
         )
       }
@@ -96,15 +99,27 @@ export class GetCategoryAnalyticsUseCase {
   private aggregateTransaction(
     transaction: any,
     categoryMap: Map<string, CategoryAnalytics>,
-    categoriesLookup: Map<string, any>,
+    categoryByIdMap: Map<string, any>,
+    categoryByNameMap: Map<string, any>,
     type: 'income' | 'expense'
   ): void {
-    const categoryId = transaction.categoryId || transaction.category
-    const category = categoriesLookup.get(transaction.categoryId!)
+    // Try to find category by ID first, then by name
+    let category = null
+    let categoryKey = ''
 
-    if (!categoryMap.has(categoryId)) {
-      categoryMap.set(categoryId, {
-        categoryId: categoryId,
+    if (transaction.categoryId) {
+      // New format: has category_id UUID
+      category = categoryByIdMap.get(transaction.categoryId)
+      categoryKey = transaction.categoryId
+    } else if (transaction.category) {
+      // Old format: only has category text
+      category = categoryByNameMap.get(transaction.category.toLowerCase())
+      categoryKey = category?.id || transaction.category
+    }
+
+    if (!categoryMap.has(categoryKey)) {
+      categoryMap.set(categoryKey, {
+        categoryId: categoryKey,
         categoryName: category?.name || transaction.category,
         categoryIcon: category?.icon || '📦',
         categoryColor: category?.color || '#607D8B',
@@ -115,7 +130,7 @@ export class GetCategoryAnalyticsUseCase {
       })
     }
 
-    const analytics = categoryMap.get(categoryId)!
+    const analytics = categoryMap.get(categoryKey)!
     analytics.totalAmount += transaction.amount
     analytics.transactionCount += 1
   }

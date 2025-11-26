@@ -3,6 +3,9 @@ import { fileURLToPath } from 'node:url'
 import path from 'path'
 
 export default defineConfig({
+  server: {
+    allowedHosts: ['d5e500964643.ngrok-free.app']
+  },
   test: {
     globals: true,
     environment: 'jsdom',

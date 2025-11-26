@@ -13,18 +13,18 @@
     </div>
 
     <!-- Custom Date Range (Optional Future Enhancement) -->
-    <div v-if="showCustomRange" class="mt-4 p-4 bg-gray-50 rounded-lg">
-      <p class="text-sm font-medium text-gray-700 mb-2">Custom Range</p>
+    <div v-if="showCustomRange" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+      <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Custom Range</p>
       <div class="grid grid-cols-2 gap-3">
         <input
           v-model="customFrom"
           type="date"
-          class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
         />
         <input
           v-model="customTo"
           type="date"
-          class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
         />
       </div>
       <button
@@ -149,12 +149,12 @@ const applyCustomRange = () => {
 }
 
 .period-btn {
-  @apply px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg;
-  @apply hover:bg-gray-50 hover:border-gray-300 transition-all;
+  @apply px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-all;
 }
 
 .period-btn.active {
-  @apply bg-gray-900 text-white border-gray-900;
-  @apply hover:bg-gray-800 hover:border-gray-800;
+  @apply bg-gray-900 dark:bg-primary-600 text-white border-gray-900 dark:border-primary-600;
+  @apply hover:bg-gray-800 dark:hover:bg-primary-700 hover:border-gray-800 dark:hover:border-primary-700;
 }
 </style>

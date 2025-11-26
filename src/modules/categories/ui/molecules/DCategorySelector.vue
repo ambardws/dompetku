@@ -1,6 +1,6 @@
 <template>
   <div class="d-category-selector">
-    <label v-if="label" class="block text-sm font-medium text-gray-700 mb-2">
+    <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
@@ -12,7 +12,8 @@
         :class="buttonClasses"
         class="w-full px-4 py-3 text-left border rounded-xl
                focus:outline-none focus:ring-2 transition-all
-               disabled:bg-gray-50 disabled:cursor-not-allowed
+               bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+               disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:cursor-not-allowed
                flex items-center justify-between"
         @click="toggleDropdown"
       >
@@ -20,10 +21,10 @@
           <span class="text-lg">{{ selectedCategory.icon }}</span>
           <span class="font-medium">{{ selectedCategory.name }}</span>
         </span>
-        <span v-else class="text-gray-400">{{ placeholder }}</span>
+        <span v-else class="text-gray-400 dark:text-gray-500">{{ placeholder }}</span>
 
         <svg
-          class="w-5 h-5 text-gray-400 transition-transform"
+          class="w-5 h-5 text-gray-400 dark:text-gray-500 transition-transform"
           :class="{ 'rotate-180': isOpen }"
           fill="none"
           stroke="currentColor"
@@ -36,14 +37,14 @@
       <!-- Dropdown -->
       <div
         v-if="isOpen"
-        class="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg
+        class="absolute z-10 w-full mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-lg
                max-h-60 overflow-auto animate-fade-in"
       >
-        <div v-if="loading" class="p-4 text-center text-gray-500">
+        <div v-if="loading" class="p-4 text-center text-gray-500 dark:text-gray-400">
           Loading categories...
         </div>
 
-        <div v-else-if="categories.length === 0" class="p-4 text-center text-gray-500">
+        <div v-else-if="categories.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
           No categories available
         </div>
 
@@ -51,18 +52,18 @@
           v-for="category in categories"
           :key="category.id"
           type="button"
-          class="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors
-                 flex items-center gap-3 border-b border-gray-100 last:border-0"
-          :class="{ 'bg-primary-50': modelValue === category.id }"
+          class="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors
+                 flex items-center gap-3 border-b border-gray-100 dark:border-gray-600 last:border-0"
+          :class="{ 'bg-primary-50 dark:bg-primary-900/20': modelValue === category.id }"
           @click="selectCategory(category)"
         >
           <span class="text-xl">{{ category.icon }}</span>
           <div class="flex-1">
-            <p class="font-medium text-gray-900">{{ category.name }}</p>
+            <p class="font-medium text-gray-900 dark:text-white">{{ category.name }}</p>
           </div>
           <div
             v-if="modelValue === category.id"
-            class="w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center"
+            class="w-5 h-5 rounded-full bg-primary-500 dark:bg-primary-600 flex items-center justify-center"
           >
             <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -119,8 +120,8 @@ const selectedCategory = computed(() => {
 })
 
 const buttonClasses = computed(() => ({
-  'border-gray-300 focus:border-primary-500 focus:ring-primary-500/20': !props.error,
-  'border-red-500 focus:border-red-500 focus:ring-red-500/20': props.error,
+  'border-gray-300 dark:border-gray-600 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-500/20': !props.error,
+  'border-red-500 dark:border-red-600 focus:border-red-500 focus:ring-red-500/20': props.error,
 }))
 
 function toggleDropdown() {

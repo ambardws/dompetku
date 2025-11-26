@@ -121,6 +121,7 @@ export default defineEventHandler(async (event) => {
       )
 
       const categories = await categoryResponse.json()
+
       const category = categories.find((c: any) =>
         c.name.toLowerCase() === categoryName.toLowerCase()
       )
@@ -144,10 +145,11 @@ export default defineEventHandler(async (event) => {
         body: JSON.stringify({
           user_id: botUser.user_id,
           category_id: category.id,
+          category: category.name,
           amount,
-          description,
+          note: description,
           type: 'expense',
-          date: new Date().toISOString()
+          created_at: new Date().toISOString()
         })
       })
 

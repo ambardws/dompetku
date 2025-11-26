@@ -1,8 +1,8 @@
 <template>
   <div class="w-full">
-    <label v-if="label" :for="inputId" class="block text-sm font-medium text-gray-700 mb-2">
+    <label v-if="label" :for="inputId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
       {{ label }}
-      <span v-if="required" class="text-red-500">*</span>
+      <span v-if="required" class="text-red-500 dark:text-red-400">*</span>
     </label>
 
     <div class="relative">
@@ -20,16 +20,16 @@
         @focus="handleFocus"
       />
 
-      <div v-if="$slots.suffix" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+      <div v-if="$slots.suffix" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">
         <slot name="suffix" />
       </div>
     </div>
 
-    <p v-if="error" class="mt-2 text-sm text-red-500 animate-slide-down">
+    <p v-if="error" class="mt-2 text-sm text-red-500 dark:text-red-400 animate-slide-down">
       {{ error }}
     </p>
 
-    <p v-else-if="hint" class="mt-2 text-sm text-gray-500">
+    <p v-else-if="hint" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
       {{ hint }}
     </p>
   </div>
@@ -66,13 +66,13 @@ const isFocused = ref(false)
 const inputId = `input-${Math.random().toString(36).substr(2, 9)}`
 
 const inputClasses = computed(() => {
-  const base = 'w-full rounded-xl border px-4 py-3 transition-all duration-200 focus:outline-none focus:ring-2'
+  const base = 'w-full rounded-xl border px-4 py-3 transition-all duration-200 focus:outline-none focus:ring-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500'
   const state = props.error
-    ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+    ? 'border-red-300 dark:border-red-800 focus:border-red-500 focus:ring-red-500/20'
     : isFocused.value
-    ? 'border-primary-500 focus:border-primary-500 focus:ring-primary-500/20'
-    : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/20'
-  const disabled = props.disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'
+    ? 'border-primary-500 dark:border-primary-600 focus:border-primary-500 focus:ring-primary-500/20'
+    : 'border-gray-300 dark:border-gray-600 focus:border-primary-500 focus:ring-primary-500/20'
+  const disabled = props.disabled ? 'bg-gray-100 dark:bg-gray-900 cursor-not-allowed' : 'bg-white dark:bg-gray-700'
 
   return `${base} ${state} ${disabled}`
 })

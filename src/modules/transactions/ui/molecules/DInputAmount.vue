@@ -1,12 +1,12 @@
 <template>
   <div class="w-full">
-    <label v-if="label" class="block text-sm font-medium text-gray-700 mb-2">
+    <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
 
     <div class="relative">
-      <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+      <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 font-medium">
         Rp
       </div>
 
@@ -17,7 +17,7 @@
         :placeholder="placeholder"
         :disabled="disabled"
         :class="inputClasses"
-        class="w-full rounded-xl border px-4 py-3 pl-12 transition-all duration-200 focus:outline-none focus:ring-2"
+        class="w-full rounded-xl border px-4 py-3 pl-12 transition-all duration-200 focus:outline-none focus:ring-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
         @input="handleInput"
         @blur="handleBlur"
         @focus="handleFocus"
@@ -28,7 +28,7 @@
           v-for="quick in quickAmounts"
           :key="quick"
           type="button"
-          class="px-2 py-1 text-xs font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors"
+          class="px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors"
           @click="setQuickAmount(quick)"
         >
           {{ formatQuickAmount(quick) }}
@@ -40,7 +40,7 @@
       {{ error }}
     </p>
 
-    <p v-else-if="hint" class="mt-2 text-sm text-gray-500">
+    <p v-else-if="hint" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
       {{ hint }}
     </p>
   </div>
@@ -80,11 +80,11 @@ const displayValue = computed(() => {
 
 const inputClasses = computed(() => {
   const state = props.error
-    ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+    ? 'border-red-300 dark:border-red-600 focus:border-red-500 focus:ring-red-500/20'
     : isFocused.value
-    ? 'border-primary-500 focus:border-primary-500 focus:ring-primary-500/20'
-    : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/20'
-  const disabled = props.disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'
+    ? 'border-primary-500 dark:border-primary-400 focus:border-primary-500 focus:ring-primary-500/20'
+    : 'border-gray-300 dark:border-gray-600 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-500/20'
+  const disabled = props.disabled ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : 'bg-white dark:bg-gray-700'
 
   return `${state} ${disabled}`
 })

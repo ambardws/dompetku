@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 pb-20">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 transition-colors">
     <div class="max-w-3xl mx-auto px-4 py-6 sm:py-8">
       <!-- Page Header -->
       <DPageHeader
@@ -8,7 +8,11 @@
         icon="💰"
         :user-email="user?.email"
         @logout="handleLogout"
-      />
+      >
+        <template #dark-mode-toggle>
+          <DDarkModeToggle :is-dark="isDark" @toggle="toggleDarkMode" />
+        </template>
+      </DPageHeader>
 
       <!-- Quick Actions & Period Selector -->
       <div class="mb-5 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
@@ -25,25 +29,28 @@
       </div>
 
       <!-- Summary Cards -->
-      <DSummaryCards :summary="summary" class="mb-6" />
+      <DSummaryCardsSkeleton v-if="isLoading" class="mb-6" />
+      <DSummaryCards v-else :summary="summary" class="mb-6" />
 
       <!-- Analytics Section -->
-      <div class="mb-5 bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div class="mb-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <DAnalyticsCardSkeleton v-if="isLoadingAnalytics" />
         <DAnalyticsCard
+          v-else
           :summary="analyticsSummary"
           title="Analisis Keuangan"
         />
       </div>
 
       <!-- Transaction Form -->
-      <div class="bg-white rounded-xl border border-gray-200 p-5 mb-5">
+      <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-5">
         <div class="flex items-center gap-2.5 mb-5">
-          <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-            <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
           </div>
-          <h2 class="text-lg font-bold text-gray-900">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">
             {{ editingTransaction ? 'Edit Transaksi' : 'Tambah Transaksi' }}
           </h2>
         </div>
@@ -57,15 +64,15 @@
       </div>
 
       <!-- Transaction List -->
-      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-100">
+      <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-              <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
-            <h2 class="text-lg font-bold text-gray-900">Riwayat Transaksi</h2>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Riwayat Transaksi</h2>
           </div>
         </div>
         <DTransactionList
@@ -108,12 +115,16 @@ import DAnalyticsCard from '~modules/analytics/ui/organisms/DAnalyticsCard.vue'
 import DPeriodSelector from '~modules/analytics/ui/molecules/DPeriodSelector.vue'
 import DPageHeader from '~shared/ui/organisms/DPageHeader.vue'
 import DSummaryCards from '~shared/ui/molecules/DSummaryCards.vue'
+import DSummaryCardsSkeleton from '~shared/ui/molecules/DSummaryCardsSkeleton.vue'
+import DAnalyticsCardSkeleton from '~shared/ui/organisms/DAnalyticsCardSkeleton.vue'
 import DActionsMenu from '~shared/ui/molecules/DActionsMenu.vue'
 import DBotLinkDialog from '~shared/ui/molecules/DBotLinkDialog.vue'
+import DDarkModeToggle from '~shared/ui/atoms/DDarkModeToggle.vue'
 import type { PeriodValue } from '~modules/analytics/ui/molecules/DPeriodSelector.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useToast } from '~~/src/shared/composables/useToast'
 import { useBotLink } from '~shared/composables/useBotLink'
+import { useDarkMode } from '~shared/composables/useDarkMode'
 
 
 
@@ -142,6 +153,7 @@ const transactionRepository = useTransactionRepository()
 const categoryRepository = useCategoryRepository()
 const router = useRouter()
 const toast = useToast()
+const { isDark, toggle: toggleDarkMode } = useDarkMode()
 
 // Bot linking
 const {
@@ -265,7 +277,6 @@ const handleAddTransaction = async (data: {
   categoryId?: string
   note?: string
 }) => {
-  console.log(user.value)
   if (!user.value?.id) return
 
   isSubmitting.value = true
@@ -288,7 +299,6 @@ const handleAddTransaction = async (data: {
 }
 
 const handleEditTransaction = (transaction: Transaction) => {
-  console.log(transaction)
   editingTransaction.value = transaction
   // Scroll to form
   window.scrollTo({ top: 0, behavior: 'smooth' })

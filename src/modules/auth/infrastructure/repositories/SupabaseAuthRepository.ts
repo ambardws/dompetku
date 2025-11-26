@@ -21,7 +21,6 @@ export class SupabaseAuthRepository implements AuthRepository {
         password: input.password,
       })
 
-      console.log('Supabase register data:', data, 'error:', error)
 
       if (error) {
         return {
@@ -54,8 +53,6 @@ export class SupabaseAuthRepository implements AuthRepository {
         email: input.email,
         password: input.password,
       })
-
-      console.log('Supabase login data:', data, 'error:', error)
 
       if (error) {
         return {

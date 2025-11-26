@@ -68,6 +68,9 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    // Generate unique ID for bot user
+    const botUserId = `bot_${platform}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+
     // Create bot user
     const createBotResponse = await fetch(`${supabaseUrl}/rest/v1/bot_users`, {
       method: 'POST',
@@ -78,6 +81,7 @@ export default defineEventHandler(async (event) => {
         'Prefer': 'return=representation'
       },
       body: JSON.stringify({
+        id: botUserId,
         user_id: linkTokenData.user_id,
         platform,
         platform_user_id: platformUserId,

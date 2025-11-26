@@ -1,8 +1,8 @@
 <template>
   <div class="d-color-picker">
-    <label v-if="label" class="block text-sm font-medium text-gray-700 mb-2">
+    <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
       {{ label }}
-      <span v-if="required" class="text-gray-400">*</span>
+      <span v-if="required" class="text-gray-400 dark:text-gray-500">*</span>
     </label>
 
     <div class="flex gap-2">
@@ -29,7 +29,8 @@
         :class="inputClasses"
         class="flex-1 px-3 py-2 text-sm border rounded-lg uppercase
                focus:outline-none focus:ring-2 transition-all
-               disabled:bg-gray-50 disabled:cursor-not-allowed"
+               bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500
+               disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
         @input="handleInput"
       />
     </div>
@@ -37,9 +38,9 @@
     <!-- Color Palette Dropdown -->
     <div
       v-if="isOpen"
-      class="mt-2 p-3 bg-white border border-gray-200 rounded-lg shadow-lg animate-fade-in"
+      class="mt-2 p-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg animate-fade-in"
     >
-      <p class="text-xs text-gray-500 mb-2">Popular colors:</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Popular colors:</p>
       <div class="grid grid-cols-10 gap-1.5">
         <button
           v-for="color in colors"
@@ -47,8 +48,8 @@
           type="button"
           class="w-7 h-7 rounded-md transition-all border-2"
           :class="{
-            'border-gray-800 ring-2 ring-gray-200': modelValue.toUpperCase() === color.toUpperCase(),
-            'border-gray-200 hover:border-gray-300': modelValue.toUpperCase() !== color.toUpperCase()
+            'border-gray-800 dark:border-gray-300 ring-2 ring-gray-200 dark:ring-gray-600': modelValue.toUpperCase() === color.toUpperCase(),
+            'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500': modelValue.toUpperCase() !== color.toUpperCase()
           }"
           :style="{ backgroundColor: color }"
           @click="selectColor(color)"
@@ -108,13 +109,13 @@ const internalValue = computed({
 })
 
 const buttonClasses = computed(() => ({
-  'border-gray-300': !props.error,
-  'border-red-500': props.error,
+  'border-gray-300 dark:border-gray-600': !props.error,
+  'border-red-500 dark:border-red-600': props.error,
 }))
 
 const inputClasses = computed(() => ({
-  'border-gray-300 focus:border-gray-900 focus:ring-gray-900/10': !props.error,
-  'border-red-500 focus:border-red-500 focus:ring-red-500/20': props.error,
+  'border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-gray-400 focus:ring-gray-900/10': !props.error,
+  'border-red-500 dark:border-red-600 focus:border-red-500 focus:ring-red-500/20': props.error,
 }))
 
 function toggleDropdown() {

@@ -1,7 +1,7 @@
 <template>
   <form class="space-y-6" @submit.prevent="handleSubmit">
     <div class="space-y-5">
-      <div class="grid grid-cols-2 gap-3 p-1 bg-gray-100 rounded-xl">
+      <div class="grid grid-cols-2 gap-3 p-1 bg-gray-100 dark:bg-gray-700 rounded-xl">
         <button
           v-for="type in transactionTypes"
           :key="type.value"
@@ -10,9 +10,9 @@
             'relative py-3 px-6 rounded-lg font-semibold transition-all duration-200',
             formData.type === type.value
               ? type.value === 'income'
-                ? 'bg-white text-emerald-700 shadow-sm border border-emerald-200'
-                : 'bg-white text-rose-700 shadow-sm border border-rose-200'
-              : 'bg-transparent text-gray-600 hover:text-gray-900'
+                ? 'bg-white dark:bg-gray-800 text-emerald-700 dark:text-emerald-400 shadow-sm border border-emerald-200 dark:border-emerald-800'
+                : 'bg-white dark:bg-gray-800 text-rose-700 dark:text-rose-400 shadow-sm border border-rose-200 dark:border-rose-800'
+              : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
           ]"
           @click="formData.type = type.value"
         >

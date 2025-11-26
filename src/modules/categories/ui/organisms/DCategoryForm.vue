@@ -2,8 +2,8 @@
   <form class="space-y-4" @submit.prevent="handleSubmit">
     <!-- Type Selector -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">
-        Type <span class="text-gray-400">*</span>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        Type <span class="text-gray-400 dark:text-gray-500">*</span>
       </label>
       <div class="flex gap-3">
         <button
@@ -14,9 +14,9 @@
             'flex-1 py-2.5 px-4 rounded-lg font-medium transition-all text-sm',
             formData.type === type.value
               ? type.value === 'expense'
-                ? 'bg-orange-600 text-white'
-                : 'bg-emerald-600 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-orange-600 dark:bg-orange-700 text-white'
+                : 'bg-emerald-600 dark:bg-emerald-700 text-white'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
           ]"
           :disabled="mode === 'edit'"
           @click="formData.type = type.value"
@@ -24,7 +24,7 @@
           {{ type.label }}
         </button>
       </div>
-      <p v-if="mode === 'edit'" class="mt-1.5 text-xs text-gray-500">
+      <p v-if="mode === 'edit'" class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
         Type cannot be changed after creation
       </p>
     </div>

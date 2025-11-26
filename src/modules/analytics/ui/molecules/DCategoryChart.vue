@@ -37,8 +37,8 @@
 
       <!-- Center Label -->
       <div class="absolute inset-0 flex flex-col items-center justify-center">
-        <p class="text-sm text-gray-500 mb-1">{{ title }}</p>
-        <p class="text-2xl font-bold text-gray-900">
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">{{ title }}</p>
+        <p class="text-2xl font-bold text-gray-900 dark:text-white">
           {{ formatAmount(totalAmount) }}
         </p>
       </div>
@@ -50,7 +50,7 @@
         v-for="(item, index) in categories"
         :key="index"
         class="flex items-center justify-between p-3 rounded-lg transition-all"
-        :class="hoveredIndex === index ? 'bg-gray-50 scale-105' : 'hover:bg-gray-50'"
+        :class="hoveredIndex === index ? 'bg-gray-50 dark:bg-gray-800 scale-105' : 'hover:bg-gray-50 dark:hover:bg-gray-800'"
         @mouseenter="hoveredIndex = index"
         @mouseleave="hoveredIndex = null"
       >
@@ -60,21 +60,21 @@
             :style="{ backgroundColor: item.categoryColor }"
           />
           <span class="text-lg">{{ item.categoryIcon }}</span>
-          <span class="text-sm font-medium text-gray-700">
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
             {{ item.categoryName }}
           </span>
         </div>
         <div class="text-right">
-          <p class="text-sm font-semibold text-gray-900">
+          <p class="text-sm font-semibold text-gray-900 dark:text-white">
             Rp {{ formatAmount(item.totalAmount) }}
           </p>
-          <p class="text-xs text-gray-500">{{ item.percentage }}%</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">{{ item.percentage }}%</p>
         </div>
       </div>
 
       <!-- Empty State -->
       <div v-if="categories.length === 0" class="text-center py-8">
-        <p class="text-gray-400 text-sm">Belum ada data</p>
+        <p class="text-gray-400 dark:text-gray-500 text-sm">Belum ada data</p>
       </div>
     </div>
   </div>

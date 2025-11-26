@@ -1,29 +1,29 @@
 <template>
-  <div class="min-h-screen bg-gray-50 pb-20">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 transition-colors">
     <div class="max-w-3xl mx-auto px-4 py-6 sm:py-8">
       <!-- Header -->
-      <header class="mb-6 bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+      <header class="mb-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
         <div class="flex items-center gap-3">
           <button
             @click="router.push('/')"
-            class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             title="Back to dashboard"
           >
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <div>
-            <h1 class="text-xl font-bold text-gray-900">Categories Management</h1>
-            <p class="text-xs text-gray-500">Manage your transaction categories</p>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Categories Management</h1>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Manage your transaction categories</p>
           </div>
         </div>
       </header>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <!-- Left: Create/Edit Form -->
-        <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {{ editingCategory ? 'Edit Category' : 'Create New Category' }}
           </h2>
 
@@ -39,21 +39,21 @@
         <!-- Right: Categories List -->
         <div class="space-y-4">
           <!-- Expense Categories -->
-          <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+          <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
             <div class="flex items-center justify-between mb-4">
-              <h2 class="text-lg font-semibold text-gray-900">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 Expense Categories
               </h2>
-              <span class="text-xs text-gray-500">
+              <span class="text-xs text-gray-500 dark:text-gray-400">
                 {{ expenseCategories.length }} categories
               </span>
             </div>
 
-            <div v-if="isLoading" class="text-center py-6 text-sm text-gray-500">
+            <div v-if="isLoading" class="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
               Loading categories...
             </div>
 
-            <div v-else-if="expenseCategories.length === 0" class="text-center py-6 text-sm text-gray-500">
+            <div v-else-if="expenseCategories.length === 0" class="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
               No expense categories yet
             </div>
 
@@ -69,21 +69,21 @@
           </div>
 
           <!-- Income Categories -->
-          <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+          <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
             <div class="flex items-center justify-between mb-4">
-              <h2 class="text-lg font-semibold text-gray-900">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 Income Categories
               </h2>
-              <span class="text-xs text-gray-500">
+              <span class="text-xs text-gray-500 dark:text-gray-400">
                 {{ incomeCategories.length }} categories
               </span>
             </div>
 
-            <div v-if="isLoading" class="text-center py-6 text-sm text-gray-500">
+            <div v-if="isLoading" class="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
               Loading categories...
             </div>
 
-            <div v-else-if="incomeCategories.length === 0" class="text-center py-6 text-sm text-gray-500">
+            <div v-else-if="incomeCategories.length === 0" class="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
               No income categories yet
             </div>
 
@@ -179,7 +179,6 @@ async function handleSubmit(data: {
   color: string
   type: 'income' | 'expense'
 }) {
-  console.log(user.value)
   if (!user.value?.id) return
 
   isSubmitting.value = true

@@ -15,14 +15,14 @@
             </svg>
           </slot>
         </div>
-        <p class="text-xs font-medium text-gray-600">{{ label }}</p>
+        <p class="text-xs font-medium text-gray-600 dark:text-gray-400">{{ label }}</p>
       </div>
 
       <p :class="['text-2xl font-bold mb-1', valueClass]">
         {{ formattedValue }}
       </p>
 
-      <p v-if="subtitle" class="text-xs text-gray-500">{{ subtitle }}</p>
+      <p v-if="subtitle" class="text-xs text-gray-500 dark:text-gray-400">{{ subtitle }}</p>
     </div>
   </div>
 </template>
@@ -46,28 +46,19 @@ const formattedValue = computed(() => {
 })
 
 const cardClasses = computed(() => {
-  switch (props.variant) {
-    case 'balance':
-      return 'bg-white border border-gray-200'
-    case 'income':
-      return 'bg-white border border-gray-200'
-    case 'expense':
-      return 'bg-white border border-gray-200'
-    default:
-      return 'bg-white border border-gray-200'
-  }
+  return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
 })
 
 const iconBgClass = computed(() => {
   switch (props.variant) {
     case 'balance':
-      return 'bg-gray-100'
+      return 'bg-gray-100 dark:bg-gray-700'
     case 'income':
-      return 'bg-emerald-50'
+      return 'bg-emerald-50 dark:bg-emerald-900/20'
     case 'expense':
-      return 'bg-rose-50'
+      return 'bg-rose-50 dark:bg-rose-900/20'
     default:
-      return 'bg-gray-100'
+      return 'bg-gray-100 dark:bg-gray-700'
   }
 })
 
@@ -87,13 +78,13 @@ const iconClass = computed(() => {
 const valueClass = computed(() => {
   switch (props.variant) {
     case 'balance':
-      return props.value >= 0 ? 'text-gray-900' : 'text-rose-600'
+      return props.value >= 0 ? 'text-gray-900 dark:text-white' : 'text-rose-600 dark:text-rose-400'
     case 'income':
-      return 'text-gray-900'
+      return 'text-gray-900 dark:text-white'
     case 'expense':
-      return 'text-gray-900'
+      return 'text-gray-900 dark:text-white'
     default:
-      return 'text-gray-900'
+      return 'text-gray-900 dark:text-white'
   }
 })
 </script>

@@ -1,32 +1,32 @@
 <template>
   <div
-    class="category-card p-3 rounded-lg border transition-all hover:border-gray-300"
+    class="category-card p-3 rounded-lg border transition-all hover:border-gray-300 dark:hover:border-gray-500"
   >
     <div class="flex items-center justify-between">
       <!-- Category Info -->
       <div class="flex items-center gap-3 flex-1">
         <div
-          class="w-10 h-10 rounded-lg flex items-center justify-center text-xl bg-gray-100"
+          class="w-10 h-10 rounded-lg flex items-center justify-center text-xl bg-gray-100 dark:bg-gray-700"
         >
           {{ category.icon }}
         </div>
 
         <div class="flex-1">
-          <h3 class="text-sm font-semibold text-gray-900">{{ category.name }}</h3>
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ category.name }}</h3>
           <div class="flex items-center gap-2 mt-0.5">
             <span
               :class="[
                 'text-xs px-2 py-0.5 rounded-full font-medium',
                 category.type === 'income'
-                  ? 'bg-emerald-50 text-emerald-700'
-                  : 'bg-orange-50 text-orange-700'
+                  ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
+                  : 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400'
               ]"
             >
               {{ category.type === 'income' ? 'Income' : 'Expense' }}
             </span>
             <span
               v-if="category.isDefault"
-              class="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-600"
+              class="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
             >
               Default
             </span>
@@ -38,7 +38,7 @@
       <div v-if="!category.isDefault" class="flex items-center gap-1">
         <button
           type="button"
-          class="p-1.5 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+          class="p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           title="Edit category"
           @click="$emit('edit', category)"
         >
@@ -49,7 +49,7 @@
 
         <button
           type="button"
-          class="p-1.5 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+          class="p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           title="Delete category"
           @click="$emit('delete', category)"
         >
@@ -59,7 +59,7 @@
         </button>
       </div>
 
-      <div v-else class="text-xs text-gray-400">
+      <div v-else class="text-xs text-gray-400 dark:text-gray-500">
         Cannot edit/delete
       </div>
     </div>
@@ -86,6 +86,6 @@ defineEmits<Emits>()
 
 <style scoped>
 .category-card {
-  @apply bg-white border-gray-200;
+  @apply bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600;
 }
 </style>
