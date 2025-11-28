@@ -5,13 +5,8 @@
   NODE_VERSION = "20"
 
 [[redirects]]
-  from = "/_nuxt/*"
-  to = "/_nuxt/:splat"
-  status = 200
-
-[[redirects]]
   from = "/*"
-  to = "/.netlify/functions/server/:splat"
+  to = "/index.html"
   status = 200
 
 [functions]
