@@ -4,6 +4,11 @@
 [build.environment]
   NODE_VERSION = "20"
 
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/server/:splat"
+  status = 200
+  force = true
+
 [functions]
   node_bundler = "esbuild"
-  included_files = ["node_modules/xlsx/**"]

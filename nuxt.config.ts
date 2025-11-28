@@ -13,12 +13,9 @@ export default defineNuxtConfig({
     '~shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
   },
 
-  // Fix untuk xlsx - HAPUS alias, pakai externals saja
+  // HAPUS rollupConfig external untuk xlsx
   nitro: {
-    preset: 'netlify',
-    rollupConfig: {
-      external: ['xlsx']
-    }
+    preset: 'netlify'
   },
 
   // Modules
