@@ -19,12 +19,7 @@ export default defineNuxtConfig({
   // Nitro configuration for Netlify
   nitro: {
     preset: 'netlify',
-    serveStatic: true,
-    output: {
-      dir: '.netlify',
-      serverDir: '.netlify/functions-internal',
-      publicDir: 'dist'
-    }
+    serveStatic: true
   },
 
   // Modules
