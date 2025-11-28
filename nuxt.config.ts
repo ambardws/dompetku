@@ -13,6 +13,11 @@ export default defineNuxtConfig({
     '~shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
   },
 
+  // TAMBAHKAN INI - Force preset yang lebih kompatibel
+  nitro: {
+    preset: 'netlify'
+  },
+
   // Modules
   modules: [
     '@nuxtjs/tailwindcss',
@@ -22,7 +27,7 @@ export default defineNuxtConfig({
 
   // TailwindCSS configuration
   tailwindcss: {
-    cssPath: '~assets/css/tailwind.css',
+    cssPath: '~/assets/css/tailwind.css',
     configPath: 'tailwind.config.ts'
   },
 
@@ -104,7 +109,7 @@ export default defineNuxtConfig({
             cacheName: 'supabase-cache',
             expiration: {
               maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 // 24 hours
+              maxAgeSeconds: 60 * 60 * 24
             },
             cacheableResponse: {
               statuses: [0, 200]
@@ -127,7 +132,7 @@ export default defineNuxtConfig({
   // Vite configuration
   vite: {
     server: {
-        allowedHosts: ['dompetkuassistant.netlify.app']
+      allowedHosts: ['dompetkuassistant.netlify.app']
     }
   }
 })
