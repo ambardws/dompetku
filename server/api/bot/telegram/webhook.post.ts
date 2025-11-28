@@ -30,7 +30,9 @@ export default defineEventHandler(async (event) => {
         '2. Klik menu "Link Telegram Bot"\n' +
         '3. Salin token yang muncul\n' +
         '4. Kirim token tersebut ke bot ini dengan perintah:\n' +
-        '   /link [token]'
+        '   /link [token]\n\n' +
+
+        'Gunakan /commands untuk melihat daftar perintah yang tersedia.'
       )
       return { ok: true }
     }
@@ -71,7 +73,6 @@ export default defineEventHandler(async (event) => {
           'Contoh:\n' +
           '/expense 50000 makan Lunch di warung\n' +
           '/income 100000 gaji Gaji bulanan\n\n' +
-          'Gunakan /categories untuk melihat daftar kategori Anda.\n' +
           'Gunakan /commands untuk melihat daftar perintah yang tersedia.'
         )
       } else {
