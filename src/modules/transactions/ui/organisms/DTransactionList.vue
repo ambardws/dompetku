@@ -48,7 +48,7 @@
 
     <div v-else class="space-y-2">
       <DTransactionRow
-        v-for="transaction in filteredTransactions"
+        v-for="transaction in paginatedTransactions"
         :key="transaction.id"
         :transaction="transaction"
         @edit="handleEdit"
@@ -56,16 +56,60 @@
       />
     </div>
 
-    <div v-if="hasMore && !loading" class="text-center pt-4">
-      <DButton variant="ghost" @click="loadMore">
-        Muat lebih banyak
-      </DButton>
+    <!-- Pagination Controls -->
+    <div v-if="totalPages > 1 && !loading" class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div class="text-sm text-gray-600 dark:text-gray-400">
+        Menampilkan {{ startIndex + 1 }}-{{ endIndex }} dari {{ filteredTransactions.length }} transaksi
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          :disabled="currentPage === 1"
+          :class="[
+            'px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200',
+            currentPage === 1
+              ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+              : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
+          ]"
+          @click="goToPage(currentPage - 1)"
+        >
+          Sebelumnya
+        </button>
+
+        <div class="flex items-center gap-1">
+          <button
+            v-for="page in visiblePages"
+            :key="page"
+            :class="[
+              'w-10 h-10 rounded-lg text-sm font-semibold transition-all duration-200',
+              currentPage === page
+                ? 'bg-primary-600 dark:bg-primary-500 text-white'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
+            ]"
+            @click="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+        </div>
+
+        <button
+          :disabled="currentPage === totalPages"
+          :class="[
+            'px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200',
+            currentPage === totalPages
+              ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+              : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
+          ]"
+          @click="goToPage(currentPage + 1)"
+        >
+          Selanjutnya
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { Transaction } from '~modules/transactions/domain/entities/Transaction'
 import DButton from '../atoms/DButton.vue'
 import DIcon from '../atoms/DIcon.vue'
@@ -100,6 +144,8 @@ const filters = [
 
 const selectedFilter = ref<FilterType>('all')
 const searchQuery = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 5
 
 const filteredTransactions = computed(() => {
   let results = props.transactions
@@ -121,6 +167,52 @@ const filteredTransactions = computed(() => {
 
   return results
 })
+
+// Pagination computed properties
+const totalPages = computed(() => {
+  return Math.ceil(filteredTransactions.value.length / itemsPerPage)
+})
+
+const startIndex = computed(() => {
+  return (currentPage.value - 1) * itemsPerPage
+})
+
+const endIndex = computed(() => {
+  return Math.min(startIndex.value + itemsPerPage, filteredTransactions.value.length)
+})
+
+const paginatedTransactions = computed(() => {
+  return filteredTransactions.value.slice(startIndex.value, endIndex.value)
+})
+
+const visiblePages = computed(() => {
+  const pages: number[] = []
+  const maxVisiblePages = 5
+
+  let startPage = Math.max(1, currentPage.value - Math.floor(maxVisiblePages / 2))
+  let endPage = Math.min(totalPages.value, startPage + maxVisiblePages - 1)
+
+  if (endPage - startPage < maxVisiblePages - 1) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1)
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i)
+  }
+
+  return pages
+})
+
+// Reset to page 1 when filter or search changes
+watch([selectedFilter, searchQuery], () => {
+  currentPage.value = 1
+})
+
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+  }
+}
 
 const handleSearch = (query: string) => {
   emit('search', query)

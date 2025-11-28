@@ -4,7 +4,7 @@ import path from 'path'
 
 export default defineConfig({
   server: {
-    allowedHosts: ['d5e500964643.ngrok-free.app']
+    allowedHosts: ['dompetkuassitant.netlify.app']
   },
   test: {
     globals: true,

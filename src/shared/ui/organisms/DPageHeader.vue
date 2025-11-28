@@ -19,6 +19,8 @@
           <p class="text-xs font-semibold text-gray-900 dark:text-white">{{ userEmail }}</p>
         </div>
 
+        <slot name="notification" />
+
         <slot name="dark-mode-toggle" />
 
         <slot name="actions">

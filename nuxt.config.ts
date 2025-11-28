@@ -26,8 +26,8 @@ export default defineNuxtConfig({
 
   // Supabase configuration
   supabase: {
-    url: 'https://elytjqsaggnbiaobkyhl.supabase.co',
-    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXRqcXNhZ2duYmlhb2JreWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE2NDQ0NTAsImV4cCI6MjA3NzIyMDQ1MH0.NeXd6Z3s8Rq_tZvFadAWczl0nRWsjJMiaiXAMBKKliE',
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_KEY,
     redirect: false,
     redirectOptions: {
       login: '/auth/login',
@@ -39,10 +39,10 @@ export default defineNuxtConfig({
   // Runtime config for server-side access
   runtimeConfig: {
     public: {
-      supabaseUrl: 'https://elytjqsaggnbiaobkyhl.supabase.co',
-      supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXRqcXNhZ2duYmlhb2JreWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE2NDQ0NTAsImV4cCI6MjA3NzIyMDQ1MH0.NeXd6Z3s8Rq_tZvFadAWczl0nRWsjJMiaiXAMBKKliE'
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_KEY
     },
-    telegramBotToken: '7755000663:AAFeBZuO2PId-w3U04G0PgaGwReV5eO2a3c'
+    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN
   },
 
   // TypeScript configuration
@@ -125,7 +125,7 @@ export default defineNuxtConfig({
   // Vite configuration
   vite: {
     server: {
-      allowedHosts: ['d5e500964643.ngrok-free.app']
+        allowedHosts: ['dompetkuassitant.netlify.app']
     }
   }
 })

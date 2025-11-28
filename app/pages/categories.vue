@@ -117,6 +117,7 @@ import DCategoryCard from '~modules/categories/ui/molecules/DCategoryCard.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
 import { useToast } from '~shared/composables/useToast'
+import { useConfirm } from '~shared/composables/useConfirm'
 
 // Add auth middleware
 definePageMeta({
@@ -138,6 +139,7 @@ const router = useRouter()
 const { user } = useAuth()
 const categoryRepository = useCategoryRepository()
 const toast = useToast()
+const confirm = useConfirm()
 
 const categories = ref<Category[]>([])
 const editingCategory = ref<Category | null>(null)
@@ -233,9 +235,14 @@ function cancelEdit() {
 }
 
 async function confirmDelete(category: Category) {
-  if (!confirm(`Are you sure you want to delete "${category.name}"?`)) {
-    return
-  }
+  const confirmed = await confirm.danger(
+    'Hapus Kategori',
+    `Apakah Anda yakin ingin menghapus kategori "${category.name}"? Kategori yang sudah digunakan dalam transaksi tidak dapat dihapus.`,
+    'Ya, Hapus',
+    'Batal'
+  )
+
+  if (!confirmed) return
 
   try {
     const deleteUseCase = new DeleteCategoryUseCase(categoryRepository)

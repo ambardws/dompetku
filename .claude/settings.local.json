@@ -9,7 +9,8 @@
       "Bash(npm install:*)",
       "Bash(ngrok version:*)",
       "Bash(ngrok http:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

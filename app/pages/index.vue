@@ -9,6 +9,9 @@
         :user-email="user?.email"
         @logout="handleLogout"
       >
+        <template #notification>
+          <DNotificationBell />
+        </template>
         <template #dark-mode-toggle>
           <DDarkModeToggle :is-dark="isDark" @toggle="toggleDarkMode" />
         </template>
@@ -120,11 +123,15 @@ import DAnalyticsCardSkeleton from '~shared/ui/organisms/DAnalyticsCardSkeleton.
 import DActionsMenu from '~shared/ui/molecules/DActionsMenu.vue'
 import DBotLinkDialog from '~shared/ui/molecules/DBotLinkDialog.vue'
 import DDarkModeToggle from '~shared/ui/atoms/DDarkModeToggle.vue'
+import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
 import type { PeriodValue } from '~modules/analytics/ui/molecules/DPeriodSelector.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useToast } from '~~/src/shared/composables/useToast'
 import { useBotLink } from '~shared/composables/useBotLink'
 import { useDarkMode } from '~shared/composables/useDarkMode'
+import { useConfirm } from '~shared/composables/useConfirm'
+import { useTransactionRealtime } from '~shared/composables/useTransactionRealtime'
+import { useNotifications } from '~shared/composables/useNotifications'
 
 
 
@@ -154,6 +161,9 @@ const categoryRepository = useCategoryRepository()
 const router = useRouter()
 const toast = useToast()
 const { isDark, toggle: toggleDarkMode } = useDarkMode()
+const confirm = useConfirm()
+const { subscribe: subscribeToTransactions, unsubscribe: unsubscribeFromTransactions } = useTransactionRealtime()
+const { addNotification } = useNotifications()
 
 // Bot linking
 const {
@@ -248,7 +258,14 @@ const handlePeriodChange = async (period: PeriodValue) => {
 }
 
 const handleLogout = async () => {
-  if (!confirm('Yakin ingin logout?')) return
+  const confirmed = await confirm.warning(
+    'Keluar dari Akun',
+    'Apakah Anda yakin ingin keluar dari akun? Anda perlu login kembali untuk mengakses aplikasi.',
+    'Ya, Keluar',
+    'Batal'
+  )
+
+  if (!confirmed) return
 
   const result = await logout()
   if (result.success) {
@@ -352,7 +369,14 @@ const handleCancelEdit = () => {
 }
 
 const handleDeleteTransaction = async (transaction: Transaction) => {
-  if (!confirm('Yakin ingin menghapus transaksi ini?')) return
+  const confirmed = await confirm.danger(
+    'Hapus Transaksi',
+    `Apakah Anda yakin ingin menghapus transaksi ${transaction.type === 'income' ? 'pemasukan' : 'pengeluaran'} sebesar Rp ${formatAmount(transaction.amount)}? Tindakan ini tidak dapat dibatalkan.`,
+    'Ya, Hapus',
+    'Batal'
+  )
+
+  if (!confirmed) return
 
   try {
     await transactionRepository.delete(transaction.id)
@@ -365,6 +389,7 @@ const handleDeleteTransaction = async (transaction: Transaction) => {
 
     // Reload analytics after deleting transaction
     await loadAnalytics()
+    toast.success('Transaksi berhasil dihapus')
   } catch (error) {
     console.error('Failed to delete transaction:', error)
     toast.error('Failed to delete transaction')
@@ -412,5 +437,40 @@ async function handleCopyToken() {
 
 onMounted(async () => {
   await Promise.all([loadTransactions(), loadAnalytics()])
+
+  // Setup realtime subscription for transactions
+  if (user.value?.id) {
+    subscribeToTransactions(user.value.id, {
+      onInsert: async (payload) => {
+        // Show notification for new transaction
+        const amount = payload.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+        const typeText = payload.type === 'income' ? 'Pemasukan' : 'Pengeluaran'
+        const emoji = payload.type === 'income' ? '💰' : '💸'
+        const category = payload.category
+
+        // Show toast notification
+        toast.success(`${emoji} ${typeText} baru: Rp ${amount}`)
+
+        // Add to notification center
+        addNotification({
+          title: `${typeText} Baru`,
+          message: `${category} - Rp ${amount}`,
+          type: 'success',
+          icon: emoji
+        })
+
+        // Reload data to get the latest transactions
+        await Promise.all([loadTransactions(), loadAnalytics()])
+      },
+      onUpdate: async (payload) => {
+        // Reload data when transaction is updated
+        await Promise.all([loadTransactions(), loadAnalytics()])
+      },
+      onDelete: async (payload) => {
+        // Reload data when transaction is deleted
+        await Promise.all([loadTransactions(), loadAnalytics()])
+      }
+    })
+  }
 })
 </script>

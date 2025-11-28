@@ -34,7 +34,7 @@ TELEGRAM_BOT_TOKEN=7755000663:AAFeBZuO2PId-w3U04G0PgaGwReV5eO2a3c
    ```bash
    curl -X POST "https://api.telegram.org/bot7755000663:AAFeBZuO2PId-w3U04G0PgaGwReV5eO2a3c/setWebhook" \
    -H "Content-Type: application/json" \
-   -d '{"url": "https://abcd1234.ngrok.io/api/bot/telegram/webhook"}'
+   -d '{"url": "https://36a9f005fba4.c278a15ec37f.ngrok-free.appree.app/api/bot/telegram/webhook"}'
    ```
 
 ### Option B: Using Production URL

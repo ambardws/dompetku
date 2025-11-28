@@ -67,6 +67,56 @@ export default defineEventHandler(async (event) => {
       return { ok: true }
     }
 
+    // handle get /categories command
+    if (text?.startsWith('/categories')) {
+      // Get bot user
+      const botUserResponse = await fetch(
+        `${supabaseUrl}/rest/v1/bot_users?platform=eq.telegram&platform_user_id=eq.${chatId}&select=user_id`,
+        {
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`
+          }
+        }
+      )
+
+      const botUsers = await botUserResponse.json()
+      if (!botUsers || botUsers.length === 0) {
+        await sendTelegramMessage(botToken, chatId,
+          '❌ Bot belum terhubung dengan akun. Gunakan /link [token] terlebih dahulu.'
+        )
+        return { ok: true }
+      }
+
+      const botUser = botUsers[0]
+
+      // Fetch categories
+      const categoryResponse = await fetch(
+        `${supabaseUrl}/rest/v1/categories?user_id=eq.${botUser.user_id}&select=name`,
+        {
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`
+          }
+        }
+      )
+
+      const categories = await categoryResponse.json()
+      if (categories.length === 0) {
+        await sendTelegramMessage(botToken, chatId,
+          'ℹ️ Anda belum memiliki kategori. Silakan buat kategori terlebih dahulu di aplikasi web.'
+        )
+        return { ok: true }
+      }
+
+      const categoryList = categories.map((c: any) => `- ${c.name}`).join('\n')
+
+      await sendTelegramMessage(botToken, chatId,
+        `📂 Daftar Kategori Anda:\n\n${categoryList}`
+      )
+      return { ok: true }
+    }
+
     // Handle /add command for transactions
     if (text?.startsWith('/add ')) {
       // Get bot user
@@ -133,6 +183,9 @@ export default defineEventHandler(async (event) => {
         return { ok: true }
       }
 
+      const type = amount >= 0 ? 'income' : 'expense'
+      const newAmount = amount >= 0 ? amount : -amount
+
       // Create transaction
       const createTxResponse = await fetch(`${supabaseUrl}/rest/v1/transactions`, {
         method: 'POST',
@@ -146,9 +199,9 @@ export default defineEventHandler(async (event) => {
           user_id: botUser.user_id,
           category_id: category.id,
           category: category.name,
-          amount,
+          amount: newAmount,
           note: description,
-          type: 'expense',
+          type: type,
           created_at: new Date().toISOString()
         })
       })
@@ -176,7 +229,8 @@ export default defineEventHandler(async (event) => {
       'Perintah yang tersedia:\n' +
       '/start - Informasi awal\n' +
       '/link [token] - Hubungkan bot dengan akun\n' +
-      '/add [jumlah] [kategori] [catatan] - Tambah transaksi'
+      '/add [jumlah] [kategori] [catatan] - Tambah transaksi\n' +
+      '/categories - Daftar kategori Anda'
     )
 
     return { ok: true }
