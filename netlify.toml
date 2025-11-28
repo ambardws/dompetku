@@ -6,9 +6,8 @@
 
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/.netlify/functions/server"
   status = 200
 
 [functions]
   node_bundler = "esbuild"
-  included_files = [".netlify/functions-internal/**"]

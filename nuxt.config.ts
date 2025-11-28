@@ -13,25 +13,27 @@ export default defineNuxtConfig({
     '~shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
   },
 
-  // HAPUS rollupConfig external untuk xlsx
+  // Tambah config untuk handle xlsx di serverless
   nitro: {
-    preset: 'netlify'
+    preset: 'netlify',
+    esbuild: {
+      options: {
+        target: 'esnext'
+      }
+    }
   },
 
-  // Modules
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxtjs/supabase',
     '@vite-pwa/nuxt'
   ],
 
-  // TailwindCSS configuration
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
     configPath: 'tailwind.config.ts'
   },
 
-  // Supabase configuration
   supabase: {
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
@@ -43,7 +45,6 @@ export default defineNuxtConfig({
     }
   },
 
-  // Runtime config for server-side access
   runtimeConfig: {
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
@@ -52,13 +53,11 @@ export default defineNuxtConfig({
     telegramBotToken: process.env.TELEGRAM_BOT_TOKEN
   },
 
-  // TypeScript configuration
   typescript: {
     strict: true,
     typeCheck: false
   },
 
-  // App configuration
   app: {
     head: {
       title: 'Dompetku',
@@ -70,7 +69,6 @@ export default defineNuxtConfig({
     }
   },
 
-  // PWA Configuration
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
@@ -124,12 +122,10 @@ export default defineNuxtConfig({
     }
   },
 
-  // Build configuration
   build: {
     transpile: []
   },
 
-  // Vite configuration
   vite: {
     server: {
       allowedHosts: ['dompetkuassistant.netlify.app']
