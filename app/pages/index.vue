@@ -140,15 +140,25 @@ import { useNotifications } from '~shared/composables/useNotifications'
 definePageMeta({
   middleware: [
     async function (to, from) {
-      const { user, init } = useAuth()
-
-      // Initialize auth session if not already loaded
-      if (!user.value) {
-        await init()
+      // Only run on client-side to avoid SSR issues
+      if (process.server) {
+        return
       }
 
-      // Check if user is authenticated
-      if (!user.value) {
+      try {
+        const { user, init } = useAuth()
+
+        // Initialize auth session if not already loaded
+        if (!user.value) {
+          await init()
+        }
+
+        // Check if user is authenticated
+        if (!user.value) {
+          return navigateTo('/login')
+        }
+      } catch (error) {
+        console.error('Auth middleware error:', error)
         return navigateTo('/login')
       }
     }
