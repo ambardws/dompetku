@@ -184,7 +184,7 @@ export default defineEventHandler(async (event) => {
         return { ok: true }
       }
 
-      const type = amount >= 0 ? 'income' : 'expense'
+      const commandType = text.startsWith('/expense ') ? 'expense' : 'income'
 
       // Create transaction
       const createTxResponse = await fetch(`${supabaseUrl}/rest/v1/transactions`, {
@@ -201,7 +201,7 @@ export default defineEventHandler(async (event) => {
           category: category.name,
           amount,
           note: description,
-          type: type,
+          type: commandType,
           created_at: new Date().toISOString()
         })
       })
