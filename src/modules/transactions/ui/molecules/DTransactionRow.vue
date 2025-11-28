@@ -43,7 +43,7 @@
         </p>
       </div>
 
-      <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+      <div class="flex gap-1 opacity-100 group-hover:opacity-100 transition-all duration-200">
         <button
           type="button"
           class="p-2.5 rounded-xl text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all hover:scale-110"
