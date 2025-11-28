@@ -13,9 +13,18 @@ export default defineNuxtConfig({
     '~shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
   },
 
-  // HAPUS rollupConfig external untuk xlsx
+  // SSR configuration
+  ssr: true,
+
+  // Nitro configuration for Netlify
   nitro: {
-    preset: 'netlify'
+    preset: 'netlify',
+    serveStatic: true,
+    output: {
+      dir: '.netlify',
+      serverDir: '.netlify/functions-internal',
+      publicDir: 'dist'
+    }
   },
 
   // Modules

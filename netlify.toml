@@ -1,14 +1,26 @@
 [build]
   command = "npm run build"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
 
+[functions]
+  directory = ".netlify/functions-internal"
+  node_bundler = "esbuild"
+  included_files = ["**"]
+
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/_nuxt/*"
+  to = "/_nuxt/:splat"
   status = 200
 
-[functions]
-  node_bundler = "esbuild"
-  included_files = [".netlify/functions-internal/**"]
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/server/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/server"
+  status = 200
