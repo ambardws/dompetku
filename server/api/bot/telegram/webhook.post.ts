@@ -54,9 +54,10 @@ export default defineEventHandler(async (event) => {
         await sendTelegramMessage(botToken, chatId,
           '✅ Berhasil menghubungkan bot dengan akun Anda!\n\n' +
           'Sekarang Anda bisa menambahkan transaksi dengan format:\n' +
-          '/add [jumlah] [kategori] [catatan]\n\n' +
+          '/expense [jumlah] [kategori] [catatan]\n\n' +
+          '/income [jumlah] [kategori] [catatan]\n\n' +
           'Contoh:\n' +
-          '/add 50000 makan Lunch di warung'
+          '/expense 50000 makan Lunch di warung'
         )
       } else {
         await sendTelegramMessage(botToken, chatId,
@@ -117,8 +118,8 @@ export default defineEventHandler(async (event) => {
       return { ok: true }
     }
 
-    // Handle /add command for transactions
-    if (text?.startsWith('/add ')) {
+    // Handle /expense command for transactions
+    if (text?.startsWith('/expense ') || text?.startsWith('/income ')) {
       // Get bot user
       const botUserResponse = await fetch(
         `${supabaseUrl}/rest/v1/bot_users?platform=eq.telegram&platform_user_id=eq.${chatId}&select=user_id`,
@@ -140,12 +141,12 @@ export default defineEventHandler(async (event) => {
 
       const botUser = botUsers[0]
 
-      // Parse transaction: /add <amount> <category> <description>
-      const parts = text.replace('/add ', '').trim().split(' ')
+      // Parse transaction: /expense or /income <amount> <category> <description>
+      const parts = text.replace('/expense ', '').trim().split(' ')
       if (parts.length < 2) {
         await sendTelegramMessage(botToken, chatId,
-          '❌ Format salah. Gunakan:\n/add [jumlah] [kategori] [catatan]\n\n' +
-          'Contoh:\n/add 50000 makan Lunch di warung'
+          '❌ Format salah. Gunakan:\n/expense atau /income [jumlah] [kategori] [catatan]\n\n' +
+          'Contoh:\n/expense 50000 makan Lunch di warung'
         )
         return { ok: true }
       }
@@ -184,7 +185,6 @@ export default defineEventHandler(async (event) => {
       }
 
       const type = amount >= 0 ? 'income' : 'expense'
-      const newAmount = amount >= 0 ? amount : -amount
 
       // Create transaction
       const createTxResponse = await fetch(`${supabaseUrl}/rest/v1/transactions`, {
@@ -199,7 +199,7 @@ export default defineEventHandler(async (event) => {
           user_id: botUser.user_id,
           category_id: category.id,
           category: category.name,
-          amount: newAmount,
+          amount,
           note: description,
           type: type,
           created_at: new Date().toISOString()
@@ -229,7 +229,8 @@ export default defineEventHandler(async (event) => {
       'Perintah yang tersedia:\n' +
       '/start - Informasi awal\n' +
       '/link [token] - Hubungkan bot dengan akun\n' +
-      '/add [jumlah] [kategori] [catatan] - Tambah transaksi\n' +
+      '/expense [jumlah] [kategori] [catatan] - Tambah transaksi pengeluaran\n' +
+      '/income [jumlah] [kategori] [catatan] - Tambah transaksi pemasukan\n' +
       '/categories - Daftar kategori Anda'
     )
 
