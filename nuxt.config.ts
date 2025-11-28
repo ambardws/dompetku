@@ -13,15 +13,11 @@ export default defineNuxtConfig({
     '~shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
   },
 
-  // TAMBAHKAN INI - Fix untuk xlsx
+  // Fix untuk xlsx - HAPUS alias, pakai externals saja
   nitro: {
     preset: 'netlify',
-    moduleSideEffects: ['xlsx'],
-    alias: {
-      'xlsx': 'xlsx/dist/xlsx.full.min.js'
-    },
-    externals: {
-      inline: ['xlsx']
+    rollupConfig: {
+      external: ['xlsx']
     }
   },
 
@@ -140,9 +136,6 @@ export default defineNuxtConfig({
   vite: {
     server: {
       allowedHosts: ['dompetkuassistant.netlify.app']
-    },
-    optimizeDeps: {
-      include: ['xlsx']
     }
   }
 })
