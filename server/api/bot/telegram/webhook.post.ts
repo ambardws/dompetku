@@ -156,8 +156,10 @@ export default defineEventHandler(async (event) => {
 
       const botUser = botUsers[0]
 
+      const commandType = text.startsWith('/expense ') ? 'expense' : 'income'
+
       // Parse transaction: /expense or /income <amount> <category> <description>
-      const parts = text.replace('/expense ', '').trim().split(' ')
+      const parts =  commandType === 'expense' ? text.replace('/expense ', '').trim().split(' ') : text.replace('/income ', '').trim().split(' ')
       if (parts.length < 2) {
         await sendTelegramMessage(botToken, chatId,
           '❌ Format salah. Gunakan:\n/expense atau /income [jumlah] [kategori] [catatan]\n\n' +
@@ -198,8 +200,6 @@ export default defineEventHandler(async (event) => {
         )
         return { ok: true }
       }
-
-      const commandType = text.startsWith('/expense ') ? 'expense' : 'income'
 
       // Create transaction
       const createTxResponse = await fetch(`${supabaseUrl}/rest/v1/transactions`, {
