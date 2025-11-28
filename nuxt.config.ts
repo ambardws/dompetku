@@ -6,6 +6,8 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  srcDir: 'app/',
+
   alias: {
     '~modules': fileURLToPath(new URL('./src/modules', import.meta.url)),
     '~shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
@@ -125,7 +127,7 @@ export default defineNuxtConfig({
   // Vite configuration
   vite: {
     server: {
-        allowedHosts: ['dompetkuassitant.netlify.app']
+        allowedHosts: ['dompetkuassistant.netlify.app']
     }
   }
 })
