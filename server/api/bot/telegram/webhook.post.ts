@@ -35,6 +35,18 @@ export default defineEventHandler(async (event) => {
       return { ok: true }
     }
 
+    if (text === '/commands') {
+      await sendTelegramMessage(botToken, chatId,
+        '📜 Daftar Perintah Dompetku Bot:\n\n' +
+        '/start - Informasi awal\n' +
+        '/link [token] - Hubungkan bot dengan akun\n' +
+        '/expense [jumlah] [kategori] [catatan] - Tambah transaksi pengeluaran\n' +
+        '/income [jumlah] [kategori] [catatan] - Tambah transaksi pemasukan\n' +
+        '/categories - Daftar kategori Anda'
+      )
+      return { ok: true }
+    }
+
     // Handle /link command
     if (text?.startsWith('/link ')) {
       const token = text.replace('/link ', '').trim()
@@ -57,7 +69,10 @@ export default defineEventHandler(async (event) => {
           '/expense [jumlah] [kategori] [catatan]\n\n' +
           '/income [jumlah] [kategori] [catatan]\n\n' +
           'Contoh:\n' +
-          '/expense 50000 makan Lunch di warung'
+          '/expense 50000 makan Lunch di warung\n' +
+          '/income 100000 gaji Gaji bulanan\n\n' +
+          'Gunakan /categories untuk melihat daftar kategori Anda.\n' +
+          'Gunakan /commands untuk melihat daftar perintah yang tersedia.'
         )
       } else {
         await sendTelegramMessage(botToken, chatId,
