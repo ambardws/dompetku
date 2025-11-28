@@ -396,10 +396,10 @@ const handleDeleteTransaction = async (transaction: Transaction) => {
   }
 }
 
-const handleExport = (format: ExportFormat) => {
+const handleExport = async (format: ExportFormat) => {
   try {
     const useCase = new ExportTransactionsUseCase()
-    const result = useCase.execute({
+    const result = await useCase.execute({
       transactions: transactions.value,
       format
     })

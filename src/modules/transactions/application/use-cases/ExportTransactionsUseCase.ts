@@ -2,7 +2,6 @@
  * ExportTransactionsUseCase
  * Business logic for exporting transactions to CSV or Excel
  */
-import * as XLSX from 'xlsx'
 import type { ExportTransactionsInput, Transaction } from '../../domain/entities/Transaction'
 
 export interface ExportResult {
@@ -12,7 +11,7 @@ export interface ExportResult {
 }
 
 export class ExportTransactionsUseCase {
-  execute(input: ExportTransactionsInput): ExportResult {
+  async execute(input: ExportTransactionsInput): Promise<ExportResult> {
     // Validation
     this.validate(input)
 
@@ -23,7 +22,7 @@ export class ExportTransactionsUseCase {
     if (input.format === 'csv') {
       return this.exportToCSV(input.transactions, filename)
     } else {
-      return this.exportToExcel(input.transactions, filename)
+      return await this.exportToExcel(input.transactions, filename)
     }
   }
 
@@ -61,7 +60,10 @@ export class ExportTransactionsUseCase {
     }
   }
 
-  private exportToExcel(transactions: Transaction[], filename: string): ExportResult {
+  private async exportToExcel(transactions: Transaction[], filename: string): Promise<ExportResult> {
+    // Dynamic import xlsx only when needed (client-side only)
+    const XLSX = await import('xlsx')
+
     // Create worksheet data
     const headers = ['Date', 'Type', 'Category', 'Amount', 'Note']
     const rows = transactions.map(t => [
