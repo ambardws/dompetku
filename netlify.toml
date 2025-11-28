@@ -6,4 +6,4 @@
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["xlsx"]
+  included_files = ["node_modules/xlsx/**"]

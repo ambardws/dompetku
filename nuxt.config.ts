@@ -13,9 +13,16 @@ export default defineNuxtConfig({
     '~shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
   },
 
-  // TAMBAHKAN INI - Force preset yang lebih kompatibel
+  // TAMBAHKAN INI - Fix untuk xlsx
   nitro: {
-    preset: 'netlify'
+    preset: 'netlify',
+    moduleSideEffects: ['xlsx'],
+    alias: {
+      'xlsx': 'xlsx/dist/xlsx.full.min.js'
+    },
+    externals: {
+      inline: ['xlsx']
+    }
   },
 
   // Modules
@@ -133,6 +140,9 @@ export default defineNuxtConfig({
   vite: {
     server: {
       allowedHosts: ['dompetkuassistant.netlify.app']
+    },
+    optimizeDeps: {
+      include: ['xlsx']
     }
   }
 })
