@@ -57,10 +57,10 @@
         </div>
       </div>
 
-      <!-- Top Categories -->
-      <div v-if="summary && (summary.topExpenseCategory || summary.topIncomeCategory)" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <!-- Top Categories - Always Show -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <!-- Top Expense -->
-        <div v-if="summary.topExpenseCategory" class="top-category bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-5">
+        <div class="top-category bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-5">
           <div class="flex items-center gap-2 mb-3">
             <div class="w-6 h-6 bg-rose-50 dark:bg-rose-900/20 rounded-lg flex items-center justify-center border border-rose-100 dark:border-rose-800">
               <svg class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,9 @@
               Pengeluaran Terbesar
             </p>
           </div>
-          <div class="flex items-center gap-3">
+          
+          <!-- Show data if exists -->
+          <div v-if="summary && summary.topExpenseCategory" class="flex items-center gap-3">
             <div
               class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
               :style="{ backgroundColor: summary.topExpenseCategory.categoryColor + '20' }"
@@ -90,10 +92,30 @@
               </p>
             </div>
           </div>
+          
+          <!-- Show placeholder if no data -->
+          <div v-else class="flex items-center gap-3">
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+              <svg class="w-6 h-6 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-gray-400 dark:text-gray-600 mb-1">
+                Belum ada data
+              </p>
+              <p class="text-sm font-medium text-gray-400 dark:text-gray-600">
+                Rp 0
+              </p>
+              <p class="text-xs text-gray-400 dark:text-gray-600 mt-0.5">
+                0% dari total
+              </p>
+            </div>
+          </div>
         </div>
 
         <!-- Top Income -->
-        <div v-if="summary.topIncomeCategory" class="top-category bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-5">
+        <div class="top-category bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-5">
           <div class="flex items-center gap-2 mb-3">
             <div class="w-6 h-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center border border-emerald-100 dark:border-emerald-800">
               <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,7 +126,9 @@
               Pemasukan Terbesar
             </p>
           </div>
-          <div class="flex items-center gap-3">
+          
+          <!-- Show data if exists -->
+          <div v-if="summary && summary.topIncomeCategory" class="flex items-center gap-3">
             <div
               class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
               :style="{ backgroundColor: summary.topIncomeCategory.categoryColor + '20' }"
@@ -123,60 +147,170 @@
               </p>
             </div>
           </div>
+          
+          <!-- Show placeholder if no data -->
+          <div v-else class="flex items-center gap-3">
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+              <svg class="w-6 h-6 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-gray-400 dark:text-gray-600 mb-1">
+                Belum ada data
+              </p>
+              <p class="text-sm font-medium text-gray-400 dark:text-gray-600">
+                Rp 0
+              </p>
+              <p class="text-xs text-gray-400 dark:text-gray-600 mt-0.5">
+                0% dari total
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Charts Section -->
+      <!-- Charts Section - Always Show -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <!-- Expense Chart -->
-        <div v-if="summary && summary.expenseByCategory.length > 0" class="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
+        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700">
           <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
             <div class="w-2 h-2 rounded-full bg-rose-500 dark:bg-rose-400"></div>
             Pengeluaran per Kategori
           </h4>
-          <DCategoryChart
-            :categories="summary.expenseByCategory"
-            title="Pengeluaran"
-            :size="chartSize"
-          />
+          
+          <!-- Show chart if has data -->
+          <div v-if="summary && summary.expenseByCategory.length > 0">
+            <DCategoryChart
+              :categories="summary.expenseByCategory"
+              title="Pengeluaran"
+              :size="chartSize"
+            />
+          </div>
+          
+          <!-- Show placeholder if no data -->
+          <div v-else class="flex flex-col items-center justify-center py-8">
+            <div class="relative w-40 h-40 mb-4">
+              <!-- Placeholder donut chart -->
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <!-- Background circle -->
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="12"
+                  class="text-gray-200 dark:text-gray-700"
+                  opacity="0.3"
+                />
+                <!-- Animated placeholder segments -->
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="12"
+                  stroke-dasharray="60 40"
+                  class="text-rose-300 dark:text-rose-700"
+                  opacity="0.5"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="12"
+                  stroke-dasharray="40 60"
+                  stroke-dashoffset="-60"
+                  class="text-rose-200 dark:text-rose-800"
+                  opacity="0.4"
+                />
+              </svg>
+              <!-- Center text -->
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="text-center">
+                  <p class="text-2xl font-bold text-gray-400 dark:text-gray-600">Rp 0</p>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
+              Belum ada data pengeluaran
+            </p>
+          </div>
         </div>
 
         <!-- Income Chart -->
-        <div v-if="summary && summary.incomeByCategory.length > 0" class="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
+        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700">
           <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
             <div class="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400"></div>
             Pemasukan per Kategori
           </h4>
-          <DCategoryChart
-            :categories="summary.incomeByCategory"
-            title="Pemasukan"
-            :size="chartSize"
-          />
-        </div>
-      </div>
-
-      <!-- Empty State -->
-      <div
-        v-if="!summary || (summary.expenseByCategory.length === 0 && summary.incomeByCategory.length === 0)"
-        class="text-center py-16"
-      >
-        <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-          <svg
-            class="w-10 h-10 text-gray-400 dark:text-gray-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          
+          <!-- Show chart if has data -->
+          <div v-if="summary && summary.incomeByCategory.length > 0">
+            <DCategoryChart
+              :categories="summary.incomeByCategory"
+              title="Pemasukan"
+              :size="chartSize"
             />
-          </svg>
+          </div>
+          
+          <!-- Show placeholder if no data -->
+          <div v-else class="flex flex-col items-center justify-center py-8">
+            <div class="relative w-40 h-40 mb-4">
+              <!-- Placeholder donut chart -->
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <!-- Background circle -->
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="12"
+                  class="text-gray-200 dark:text-gray-700"
+                  opacity="0.3"
+                />
+                <!-- Animated placeholder segments -->
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="12"
+                  stroke-dasharray="60 40"
+                  class="text-emerald-300 dark:text-emerald-700"
+                  opacity="0.5"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="12"
+                  stroke-dasharray="40 60"
+                  stroke-dashoffset="-60"
+                  class="text-emerald-200 dark:text-emerald-800"
+                  opacity="0.4"
+                />
+              </svg>
+              <!-- Center text -->
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="text-center">
+                  <p class="text-2xl font-bold text-gray-400 dark:text-gray-600">Rp 0</p>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
+              Belum ada data pemasukan
+            </p>
+          </div>
         </div>
-        <p class="text-gray-700 dark:text-gray-300 font-semibold text-lg mb-1">Belum ada data transaksi untuk periode ini</p>
-        <p class="text-gray-500 dark:text-gray-400 text-sm">Mulai tambahkan transaksi untuk melihat analisis</p>
       </div>
     </div>
   </div>

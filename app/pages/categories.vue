@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 transition-colors">
-    <div class="max-w-3xl mx-auto px-4 py-6 sm:py-8">
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-950 pb-20 transition-colors">
+    <div class="max-w-3xl mx-auto bg-white dark:bg-gray-900 min-h-screen shadow-xl px-4 py-6 sm:py-8">
       <!-- Header -->
       <header class="mb-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
         <div class="flex items-center gap-3">
@@ -49,9 +49,7 @@
               </span>
             </div>
 
-            <div v-if="isLoading" class="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
-              Loading categories...
-            </div>
+            <DCategorySkeleton v-if="isLoading" :count="3" />
 
             <div v-else-if="expenseCategories.length === 0" class="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
               No expense categories yet
@@ -79,9 +77,7 @@
               </span>
             </div>
 
-            <div v-if="isLoading" class="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
-              Loading categories...
-            </div>
+            <DCategorySkeleton v-if="isLoading" :count="3" />
 
             <div v-else-if="incomeCategories.length === 0" class="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
               No income categories yet
@@ -114,6 +110,7 @@ import { DeleteCategoryUseCase } from '~modules/categories/application/use-cases
 import { InitializeDefaultCategoriesUseCase } from '~modules/categories/application/use-cases/InitializeDefaultCategoriesUseCase'
 import DCategoryForm from '~modules/categories/ui/organisms/DCategoryForm.vue'
 import DCategoryCard from '~modules/categories/ui/molecules/DCategoryCard.vue'
+import DCategorySkeleton from '~modules/categories/ui/molecules/DCategorySkeleton.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
 import { useToast } from '~shared/composables/useToast'

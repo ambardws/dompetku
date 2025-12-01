@@ -1,14 +1,32 @@
 # Netlify Deployment Guide - Dompetku
 
+## ⚠️ PENTING: Konfigurasi Netlify Dashboard
+
+Sebelum deploy, pastikan setting berikut di Netlify Dashboard:
+
+### Build Settings
+```
+Build command: npm run build
+Publish directory: (kosongkan atau hapus)
+Functions directory: .netlify/functions-internal
+```
+
+**CRITICAL:** Jangan set `Publish directory` ke `dist`. Biarkan kosong atau hapus value-nya. Nitro akan auto-detect yang benar.
+
+### Deploy Settings
+- ✅ Auto Publishing: Enabled
+- ✅ Deploy Previews: Enabled (opsional)
+- ✅ Branch deploys: Only production branch
+
 ## Masalah yang Diperbaiki
 
 ### 1. Error "[nuxt] instance unavailable" saat reload page
 **Penyebab:** Netlify tidak menggunakan SSR Netlify Functions, melainkan serving static files.
 
 **Solusi:**
-- Update `netlify.toml` dengan redirects yang benar ke Netlify Functions
+- Biarkan Nitro handle konfigurasi Netlify (jangan override publish directory)
 - Aktifkan SSR di `nuxt.config.ts`
-- Konfigurasi Netlify preset dengan benar
+- Minimal `netlify.toml` configuration
 
 ### 2. Error "Cannot find module 'xlsx/dist/cpexcel.js'"
 **Penyebab:** Library `xlsx` di-bundle untuk SSR yang tidak kompatibel dengan serverless environment.
@@ -16,6 +34,14 @@
 **Solusi:**
 - Ubah static import menjadi dynamic import di `ExportTransactionsUseCase.ts`
 - Library `xlsx` sekarang hanya di-load di client-side saat dibutuhkan
+
+### 3. Error "500 - [nuxt] instance unavailable" di route `/`
+**Penyebab:** Auth middleware di `index.vue` berjalan di server-side dan error saat mengakses Supabase.
+
+**Solusi:**
+- Skip middleware execution di server-side dengan `if (process.server) return`
+- Tambahkan try-catch error handling di middleware
+- Auth check hanya berjalan di client-side
 
 ## Struktur Build Netlify
 
