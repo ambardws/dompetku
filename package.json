@@ -11,9 +11,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "sonar": "sonar-scanner",
-    "sonar:local": "sonar-scanner -Dsonar.host.url=http://localhost:9000",
-    "analyze": "npm run test:coverage && npm run sonar"
+    "sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io"
   },
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.1",
