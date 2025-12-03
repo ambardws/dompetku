@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-6 right-6 z-50 space-y-3 pointer-events-none">
+  <div class="fixed bottom-24 sm:bottom-6 right-4 sm:right-6 z-[60] space-y-3 pointer-events-none max-w-[calc(100vw-2rem)] sm:max-w-sm">
     <TransitionGroup name="toast-list">
       <div
         v-for="toast in toasts"
@@ -8,8 +8,8 @@
       >
         <div
           :class="[
-            'bg-white rounded-lg shadow-lg border max-w-sm w-full',
-            'p-4 flex items-start gap-3',
+            'bg-white rounded-lg shadow-lg border w-full',
+            'p-3 sm:p-4 flex items-start gap-2 sm:gap-3',
             variantClasses(toast.variant || 'info')
           ]"
         >
