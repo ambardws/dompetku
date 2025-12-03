@@ -10,7 +10,10 @@
     "postinstall": "nuxt prepare",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "sonar": "sonar-scanner",
+    "sonar:local": "sonar-scanner -Dsonar.host.url=http://localhost:9000",
+    "analyze": "npm run test:coverage && npm run sonar"
   },
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.1",
@@ -27,6 +30,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@vite-pwa/nuxt": "^1.0.7"
+    "@vite-pwa/nuxt": "^1.0.7",
+    "@vitest/coverage-v8": "^4.0.15"
   }
 }
