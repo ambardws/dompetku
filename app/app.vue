@@ -4,7 +4,7 @@
     <NuxtPage />
     <DToastContainer />
     <DConfirmDialogContainer />
-    <DBottomNav />
+    <DBottomNav v-if="!isAuthPage" />
   </div>
 </template>
 
@@ -18,5 +18,11 @@ useHead({
   htmlAttrs: {
     lang: 'id'
   }
+})
+
+// Hide bottom nav on login and register pages
+const route = useRoute()
+const isAuthPage = computed(() => {
+  return route.path === '/login' || route.path === '/register'
 })
 </script>
