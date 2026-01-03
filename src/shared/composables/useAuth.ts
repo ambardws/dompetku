@@ -51,9 +51,19 @@ export function useAuth() {
 
       const result = await registerUseCase.execute(input)
 
-      if (result.success && result.session) {
-        session.value = result.session
-        return { success: true }
+      if (result.success) {
+        if (result.session) {
+          // Registration with immediate session (email confirmed)
+          session.value = result.session
+          return { success: true }
+        } else {
+          // Registration successful but email confirmation required
+          return { 
+            success: true, 
+            emailConfirmationRequired: true,
+            message: 'Registration successful! Please check your email to confirm your account.'
+          }
+        }
       }
 
       error.value = result.error || 'Registration failed'

@@ -45,14 +45,25 @@ async function handleRegister(data: RegisterInput) {
 
   registerFormRef.value.setLoading(true)
 
-  const result = await register(data)
+  try {
+    const result = await register(data)
 
-  if (result.success) {
-    // Redirect to dashboard
-    await router.push('/')
-  } else {
+    if (result.success) {
+      if (result.emailConfirmationRequired) {
+        // Show success message for email confirmation
+        registerFormRef.value.setSuccess('Registration successful! Please check your email to confirm your account.')
+        registerFormRef.value.setLoading(false)
+      } else {
+        // Redirect to dashboard if session is created
+        await router.push('/')
+      }
+    } else {
+      registerFormRef.value.setLoading(false)
+      registerFormRef.value.setError(result.error || 'Registration failed')
+    }
+  } catch (error) {
     registerFormRef.value.setLoading(false)
-    registerFormRef.value.setError(result.error || 'Registration failed')
+    registerFormRef.value.setError('Registration error: ' + (error instanceof Error ? error.message : 'Unknown error'))
   }
 }
 </script>

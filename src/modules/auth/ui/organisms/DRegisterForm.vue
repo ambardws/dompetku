@@ -59,6 +59,14 @@
         <p class="text-sm text-red-600">{{ generalError }}</p>
       </div>
 
+      <!-- Success Message -->
+      <div
+        v-if="generalSuccess"
+        class="p-3 rounded-xl bg-green-50 border border-green-200 animate-fade-in"
+      >
+        <p class="text-sm text-green-600">{{ generalSuccess }}</p>
+      </div>
+
       <!-- Submit Button -->
       <DButton
         type="submit"
@@ -111,6 +119,7 @@ const errors = ref({
 })
 
 const generalError = ref('')
+const generalSuccess = ref('')
 const loading = ref(false)
 
 const isFormValid = computed(() => {
@@ -226,6 +235,7 @@ function validateConfirmPassword() {
 
 function handleSubmit() {
   generalError.value = ''
+  generalSuccess.value = ''
 
   // Validate all fields
   const emailValid = validateEmail()
@@ -252,10 +262,14 @@ defineExpose({
   setError: (error: string) => {
     generalError.value = error
   },
+  setSuccess: (success: string) => {
+    generalSuccess.value = success
+  },
   reset: () => {
     form.value = { email: '', password: '', confirmPassword: '' }
     errors.value = { email: '', password: '', confirmPassword: '' }
     generalError.value = ''
+    generalSuccess.value = ''
     loading.value = false
   },
 })

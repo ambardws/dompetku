@@ -29,10 +29,18 @@ export class SupabaseAuthRepository implements AuthRepository {
         }
       }
 
-      if (!data.session && !data.user) {
+      if (!data.user) {
         return {
           success: false,
-          error: 'Registration failed - no session created',
+          error: 'Registration failed - no user created',
+        }
+      }
+
+      // Handle case where session is null (email confirmation required)
+      if (!data.session) {
+        return {
+          success: true,
+          session: undefined, // User needs to confirm email first
         }
       }
 
