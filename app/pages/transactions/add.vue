@@ -113,6 +113,7 @@ const handleSubmitTransaction = async (data: {
   category: string
   categoryId?: string
   note?: string
+  transactionDate?: Date
 }) => {
   if (!user.value?.id) return
 

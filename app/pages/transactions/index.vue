@@ -7,8 +7,15 @@
         subtitle="Lihat dan kelola semua transaksi Anda"
         icon="📋"
         :user-email="user?.email"
-        @logout="handleLogout"
       >
+        <template #actions-menu>
+          <DActionsMenu
+            @export="handleExport"
+            @manage-categories="router.push('/categories')"
+            @link-bot="openBotLinkDialog"
+            @logout="handleLogout"
+          />
+        </template>
         <template #notification>
           <DNotificationBell />
         </template>
@@ -17,17 +24,10 @@
         </template>
       </DPageHeader>
 
-      <!-- Period Selector & Quick Actions -->
-      <div class="mb-5 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <DActionsMenu
-          @export="handleExport"
-          @manage-categories="router.push('/categories')"
-          @link-bot="openBotLinkDialog"
-        />
-
+      <!-- Period Selector -->
+      <div class="mb-4 flex">
         <DPeriodSelector
-          v-model="selectedPeriod"
-          @change="handlePeriodChange"
+          v-model="currentPeriod"
         />
       </div>
 
@@ -38,7 +38,7 @@
       <!-- Transaction List -->
       <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2.5">
               <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                 <svg class="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,6 +51,13 @@
               {{ transactions.length }} transaksi
             </span>
           </div>
+
+          <!-- Category Filter -->
+          <DCategoryFilter
+            v-model="selectedCategory"
+            :categories="categories"
+            :loading="isLoadingCategories"
+          />
         </div>
         <DTransactionList
           :transactions="transactions"
@@ -78,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTransactionRepository } from '~shared/composables/useTransactionRepository'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
@@ -97,12 +104,14 @@ import DBotLinkDialog from '~shared/ui/molecules/DBotLinkDialog.vue'
 import DDarkModeToggle from '~shared/ui/atoms/DDarkModeToggle.vue'
 import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
 import DFloatingActionButton from '~shared/ui/atoms/DFloatingActionButton.vue'
+import DCategoryFilter from '~modules/transactions/ui/molecules/DCategoryFilter.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useToast } from '~~/src/shared/composables/useToast'
 import { useBotLink } from '~shared/composables/useBotLink'
 import { useDarkMode } from '~shared/composables/useDarkMode'
 import { useConfirm } from '~shared/composables/useConfirm'
 import { useTransactionRealtime } from '~shared/composables/useTransactionRealtime'
+import type { Category } from '~modules/categories/domain/entities/Category'
 
 // Add auth middleware
 definePageMeta({
@@ -153,11 +162,13 @@ const showBotLinkDialog = ref(false)
 const botTokenTimeRemaining = computed(() => getTimeRemaining())
 
 const transactions = ref<Transaction[]>([])
-const selectedPeriod = ref('this-month')
 const currentPeriod = ref<PeriodValue>({
   from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-  to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 59),
+  to: new Date(),
 })
+const selectedCategory = ref('')
+const categories = ref<Category[]>([])
+const isLoadingCategories = ref(false)
 const isLoading = ref(false)
 
 const summary = computed(() => {
@@ -180,6 +191,20 @@ const formatAmount = (amount: number): string => {
   return Math.abs(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 
+const loadCategories = async () => {
+  if (!user.value?.id) return
+
+  isLoadingCategories.value = true
+  try {
+    categories.value = await categoryRepository.getByUserId(user.value.id)
+  } catch (error) {
+    toast.error('Gagal memuat kategori')
+    console.error('Failed to load categories:', error)
+  } finally {
+    isLoadingCategories.value = false
+  }
+}
+
 const loadTransactions = async () => {
   if (!user.value?.id) return
 
@@ -187,11 +212,18 @@ const loadTransactions = async () => {
   try {
     const useCase = new GetTransactionsByPeriodUseCase(transactionRepository)
 
-    transactions.value = await useCase.execute({
+    const allTransactions = await useCase.execute({
       userId: user.value.id,
       from: currentPeriod.value.from,
       to: currentPeriod.value.to
     })
+
+    // Apply category filter
+    if (selectedCategory.value) {
+      transactions.value = allTransactions.filter(t => t.categoryId === selectedCategory.value)
+    } else {
+      transactions.value = allTransactions
+    }
   } catch (error) {
     toast.error('Gagal memuat transaksi')
     console.error('Failed to load transactions:', error)
@@ -200,10 +232,15 @@ const loadTransactions = async () => {
   }
 }
 
-const handlePeriodChange = async (period: PeriodValue) => {
-  currentPeriod.value = period
+// Watch for period changes and reload data
+watch(currentPeriod, async () => {
   await loadTransactions()
-}
+}, { deep: true })
+
+// Watch for category changes and reload data
+watch(selectedCategory, async () => {
+  await loadTransactions()
+})
 
 const handleLogout = async () => {
   const confirmed = await confirm.warning(
@@ -286,6 +323,7 @@ async function handleCopyToken() {
 }
 
 onMounted(async () => {
+  await loadCategories()
   await loadTransactions()
 
   // Setup realtime subscription for transactions

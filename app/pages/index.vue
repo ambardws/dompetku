@@ -7,8 +7,15 @@
         subtitle="Kelola keuangan dengan mudah"
         icon="💰"
         :user-email="user?.email"
-        @logout="handleLogout"
       >
+        <template #actions-menu>
+          <DActionsMenu
+            @export="handleExport"
+            @manage-categories="router.push('/categories')"
+            @link-bot="openBotLinkDialog"
+            @logout="handleLogout"
+          />
+        </template>
         <template #notification>
           <DNotificationBell />
         </template>
@@ -17,17 +24,10 @@
         </template>
       </DPageHeader>
 
-      <!-- Quick Actions & Period Selector -->
-      <div class="mb-5 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <DActionsMenu
-          @export="handleExport"
-          @manage-categories="router.push('/categories')"
-          @link-bot="openBotLinkDialog"
-        />
-
+      <!-- Period Selector -->
+      <div class="mb-5 flex">
         <DPeriodSelector
-          v-model="selectedPeriod"
-          @change="handlePeriodChange"
+          v-model="currentPeriod"
         />
       </div>
 
@@ -202,13 +202,17 @@ const botTokenTimeRemaining = computed(() => getTimeRemaining())
 
 const transactions = ref<Transaction[]>([])
 const analyticsSummary = ref<AnalyticsSummary | null>(null)
-const selectedPeriod = ref('this-month')
 const currentPeriod = ref<PeriodValue>({
-  from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-  to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 59),
+  from: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // 1st of this month
+  to: new Date(), // Today
 })
 const isLoading = ref(false)
 const isLoadingAnalytics = ref(false)
+
+// Watch for period changes and reload data
+watch(currentPeriod, async () => {
+  await Promise.all([loadTransactions(), loadAnalytics()])
+}, { deep: true })
 
 // Show only recent 5 transactions on dashboard
 const recentTransactions = computed(() => {
@@ -273,11 +277,6 @@ const loadAnalytics = async () => {
   } finally {
     isLoadingAnalytics.value = false
   }
-}
-
-const handlePeriodChange = async (period: PeriodValue) => {
-  currentPeriod.value = period
-  await Promise.all([loadTransactions(), loadAnalytics()])
 }
 
 const handleLogout = async () => {

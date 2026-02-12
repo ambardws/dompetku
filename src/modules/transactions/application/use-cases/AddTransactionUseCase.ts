@@ -20,6 +20,7 @@ export class AddTransactionUseCase {
       amount: input.amount,
       category: input.category,
       note: input.note,
+      transactionDate: input.transactionDate || new Date(),
       createdAt: new Date()
     }
 

@@ -20,6 +20,7 @@ export class SupabaseTransactionRepository implements TransactionRepository {
         category: transaction.category,
         category_id: transaction.categoryId,
         note: transaction.note,
+        transaction_date: transaction.transactionDate.toISOString(),
         created_at: transaction.createdAt.toISOString()
       })
 
@@ -33,9 +34,9 @@ export class SupabaseTransactionRepository implements TransactionRepository {
       .from('transactions')
       .select('*')
       .eq('user_id', userId)
-      .gte('created_at', from.toISOString())
-      .lte('created_at', to.toISOString())
-      .order('created_at', { ascending: false })
+      .gte('transaction_date', from.toISOString())
+      .lte('transaction_date', to.toISOString())
+      .order('transaction_date', { ascending: false })
 
     if (error) {
       throw new Error(`Failed to get transactions: ${error.message}`)
@@ -80,6 +81,7 @@ export class SupabaseTransactionRepository implements TransactionRepository {
     if (transaction.category !== undefined) updateData.category = transaction.category
     if (transaction.categoryId !== undefined) updateData.category_id = transaction.categoryId
     if (transaction.note !== undefined) updateData.note = transaction.note
+    if (transaction.transactionDate !== undefined) updateData.transaction_date = transaction.transactionDate.toISOString()
 
     const { error } = await this.supabase
       .from('transactions')
@@ -109,10 +111,10 @@ export class SupabaseTransactionRepository implements TransactionRepository {
 
     // Filter by date range
     if (input.dateFrom) {
-      query = query.gte('created_at', input.dateFrom.toISOString())
+      query = query.gte('transaction_date', input.dateFrom.toISOString())
     }
     if (input.dateTo) {
-      query = query.lte('created_at', input.dateTo.toISOString())
+      query = query.lte('transaction_date', input.dateTo.toISOString())
     }
 
     // Filter by amount range
@@ -123,8 +125,8 @@ export class SupabaseTransactionRepository implements TransactionRepository {
       query = query.lte('amount', input.amountMax)
     }
 
-    // Order by created_at descending (newest first)
-    query = query.order('created_at', { ascending: false })
+    // Order by transaction_date descending (newest first)
+    query = query.order('transaction_date', { ascending: false })
 
     const { data, error } = await query
 
@@ -157,6 +159,7 @@ export class SupabaseTransactionRepository implements TransactionRepository {
       category: row.category || '', // Default to empty string for backward compatibility
       categoryId: row.category_id,
       note: row.note,
+      transactionDate: new Date(row.transaction_date),
       createdAt: new Date(row.created_at)
     }
   }

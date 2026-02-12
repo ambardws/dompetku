@@ -2,20 +2,18 @@
   <div class="relative">
     <button
       @click="toggleDropdown"
-      class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600
-             hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-lg
-             text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium transition-all duration-200"
+      class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
+      :class="showDropdown ? 'bg-gray-100 dark:bg-gray-700' : ''"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
-      Menu
     </button>
 
     <!-- Dropdown Menu -->
     <div
       v-if="showDropdown"
-      class="absolute left-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20 animate-scale-in"
+      class="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 animate-scale-in"
     >
       <!-- Manage Categories -->
       <button
@@ -67,6 +65,22 @@
         </svg>
         <span>Export Excel</span>
       </button>
+
+      <!-- Divider -->
+      <div class="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
+
+      <!-- Logout -->
+      <button
+        type="button"
+        class="w-full px-3 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2"
+        @click="handleLogout"
+      >
+        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h7a2 2 0 012 2v14a2 2 0 01-2 2h7a2 2 0 01-2-2v-7a2 2 0 012-2h-7a2 2 0 00-2 2z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11l-4-4m0 0l4 4m0 0l4-4m4 4v4M17 9l-6 6" />
+        </svg>
+        <span>Logout</span>
+      </button>
     </div>
   </div>
 </template>
@@ -79,6 +93,7 @@ const emit = defineEmits<{
   export: [format: ExportFormat]
   manageCategories: []
   linkBot: []
+  logout: []
 }>()
 
 const showDropdown = ref(false)
@@ -99,6 +114,11 @@ const handleManageCategories = () => {
 
 const handleLinkBot = () => {
   emit('linkBot')
+  showDropdown.value = false
+}
+
+const handleLogout = () => {
+  emit('logout')
   showDropdown.value = false
 }
 

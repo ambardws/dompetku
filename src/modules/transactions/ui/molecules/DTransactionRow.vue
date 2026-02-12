@@ -33,7 +33,7 @@
           {{ transaction.note }}
         </p>
         <p class="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-          {{ formatDate(transaction.createdAt) }}
+          {{ formatDate(transaction.transactionDate) }}
         </p>
       </div>
     </div>
@@ -74,7 +74,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Transaction } from '~modules/transactions/domain/entities/Transaction'
+
+
+import type { Transaction } from '../../domain/entities/Transaction';
 import DIcon from '../atoms/DIcon.vue'
 
 interface Props {

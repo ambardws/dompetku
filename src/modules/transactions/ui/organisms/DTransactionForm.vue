@@ -40,6 +40,13 @@
         :error="errors.category"
       />
 
+      <DDatePicker
+        v-model="formData.transactionDate"
+        label="Tanggal Transaksi"
+        placeholder="Pilih tanggal transaksi"
+        hint="Kosongkan untuk menggunakan tanggal hari ini"
+      />
+
       <DTextInput
         v-model="formData.note"
         label="Catatan (Opsional)"
@@ -83,6 +90,7 @@ import DButton from '../atoms/DButton.vue'
 import DIcon from '../atoms/DIcon.vue'
 import DTextInput from '../atoms/DTextInput.vue'
 import DInputAmount from '../molecules/DInputAmount.vue'
+import DDatePicker from '../molecules/DDatePicker.vue'
 import DCategorySelector from '~modules/categories/ui/molecules/DCategorySelector.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
@@ -105,6 +113,7 @@ const emit = defineEmits<{
     category: string
     categoryId?: string
     note?: string
+    transactionDate?: Date
   }]
   cancel: []
 }>()
@@ -124,7 +133,8 @@ const formData = reactive({
   amount: 0,
   category: '',
   categoryId: null as string | null,
-  note: ''
+  note: '',
+  transactionDate: '' as string // YYYY-MM-DD format for input type="date"
 })
 
 // Filter categories by transaction type
@@ -163,17 +173,23 @@ const validateForm = (): boolean => {
 
 const handleSubmit = () => {
   if (!validateForm()) return
-  
+
   // Get category name from selected category
   const selectedCategory = categories.value.find((cat) => cat.id === formData.categoryId)
   const categoryName = selectedCategory?.name || formData.category
+
+  // Convert transactionDate string to Date object if provided
+  const transactionDate = formData.transactionDate
+    ? new Date(formData.transactionDate)
+    : undefined
 
   emit('submit', {
     type: formData.type,
     amount: formData.amount,
     category: categoryName,
     categoryId: formData.categoryId || undefined,
-    note: formData.note.trim() || undefined
+    note: formData.note.trim() || undefined,
+    transactionDate
   })
 
   if (props.mode === 'create') {
@@ -192,6 +208,7 @@ const resetForm = () => {
   formData.category = ''
   formData.categoryId = null
   formData.note = ''
+  formData.transactionDate = ''
   resetErrors()
 }
 
@@ -202,6 +219,12 @@ watch(() => props.transaction, (transaction) => {
     formData.category = transaction.category
     formData.categoryId = transaction.categoryId || null
     formData.note = transaction.note || ''
+
+    // Format transactionDate to YYYY-MM-DD for input type="date"
+    if (transaction.transactionDate) {
+      const date = new Date(transaction.transactionDate)
+      formData.transactionDate = date.toISOString().split('T')[0]
+    }
   }
 }, { immediate: true })
 

@@ -10,7 +10,8 @@ export interface Transaction {
   category: string // Legacy: free-text category (kept for backward compatibility)
   categoryId?: string // New: reference to categories table
   note?: string
-  createdAt: Date
+  transactionDate: Date // Date of transaction for analytics
+  createdAt: Date // Audit timestamp
 }
 
 export type TransactionType = 'income' | 'expense'
@@ -22,6 +23,7 @@ export interface CreateTransactionInput {
   category: string // Legacy field (optional now)
   categoryId?: string // New: reference to category
   note?: string
+  transactionDate?: Date // Date of transaction (defaults to today if not provided)
 }
 
 export interface UpdateTransactionInput {
@@ -32,6 +34,7 @@ export interface UpdateTransactionInput {
   category?: string
   categoryId?: string
   note?: string
+  transactionDate?: Date
 }
 
 export interface SearchTransactionsInput {

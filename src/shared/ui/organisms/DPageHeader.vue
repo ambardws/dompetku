@@ -13,7 +13,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        
+
         <div class="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 bg-gray-900 dark:bg-gray-700 rounded-lg flex items-center justify-center text-lg sm:text-xl">
           {{ icon }}
         </div>
@@ -24,10 +24,10 @@
       </div>
 
       <!-- User Info & Actions -->
-      <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-        <div v-if="userEmail" class="hidden lg:block text-right mr-2">
-          <p class="text-xs text-gray-500 dark:text-gray-400">Logged in as</p>
-          <p class="text-xs font-semibold text-gray-900 dark:text-white">{{ userEmail }}</p>
+      <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+        <div v-if="userEmail" class="hidden lg:block text-right mr-1 sm:mr-2">
+          <p class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Logged in as</p>
+          <p class="text-[10px] sm:text-xs font-semibold text-gray-900 dark:text-white">{{ userEmail }}</p>
         </div>
 
         <slot name="notification" />
@@ -35,16 +35,10 @@
         <slot name="dark-mode-toggle" />
 
         <slot name="actions">
-          <button
-            v-if="showLogout"
-            @click="$emit('logout')"
-            class="px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white
-                   bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg
-                   transition-all duration-200"
-          >
-            Logout
-          </button>
+          <!-- Actions menu (hamburger) will be here -->
         </slot>
+
+        <slot name="actions-menu" />
       </div>
     </div>
   </header>
@@ -56,14 +50,12 @@ interface Props {
   subtitle?: string
   icon?: string
   userEmail?: string
-  showLogout?: boolean
   showBackButton?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   subtitle: '',
   icon: '💰',
-  showLogout: true,
   showBackButton: false
 })
 

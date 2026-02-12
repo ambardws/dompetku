@@ -46,6 +46,10 @@ export class UpdateTransactionUseCase {
       updates.note = input.note
     }
 
+    if (input.transactionDate !== undefined) {
+      updates.transactionDate = input.transactionDate
+    }
+
     // Check if there are any fields to update
     if (Object.keys(updates).length === 0) {
       throw new Error('No fields to update')

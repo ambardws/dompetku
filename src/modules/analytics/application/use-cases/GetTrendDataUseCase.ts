@@ -54,7 +54,7 @@ export class GetTrendDataUseCase {
 
     // Aggregate transactions
     for (const transaction of transactions) {
-      const key = this.formatPeriodKey(transaction.createdAt, input.period)
+      const key = this.formatPeriodKey(transaction.transactionDate, input.period)
       const point = points.get(key)
 
       if (point) {
