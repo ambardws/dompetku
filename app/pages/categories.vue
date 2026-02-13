@@ -1,24 +1,22 @@
 <template>
   <div class="min-h-screen bg-gray-100 dark:bg-gray-950 pb-20 transition-colors">
-    <div class="max-w-3xl mx-auto bg-white dark:bg-gray-900 min-h-screen shadow-xl px-4 py-6 sm:py-8">
-      <!-- Header -->
-      <header class="mb-4 sm:mb-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 sm:p-4 md:p-5">
-        <div class="flex items-center gap-2 sm:gap-3">
-          <button
-            @click="router.push('/')"
-            class="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            title="Back to dashboard"
-          >
-            <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <div class="min-w-0 flex-1">
-            <h1 class="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">Categories Management</h1>
-            <p class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate hidden xs:block">Manage your transaction categories</p>
-          </div>
-        </div>
-      </header>
+    <div class="max-w-3xl mx-auto bg-white dark:bg-gray-900 min-h-screen shadow-xl px-4 py-6 sm:py-8 pb-24">
+      <!-- Page Header -->
+      <DPageHeader
+        title="Kategori"
+        subtitle="Kelola kategori transaksi Anda"
+        icon="🏷️"
+        :user-email="user?.email"
+        :show-back-button="true"
+        @back="handleBack"
+      >
+        <template #notification>
+          <DNotificationBell />
+        </template>
+        <template #dark-mode-toggle>
+          <DDarkModeToggle :is-dark="isDark" @toggle="toggleDarkMode" />
+        </template>
+      </DPageHeader>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <!-- Left: Create/Edit Form -->
@@ -111,10 +109,15 @@ import { InitializeDefaultCategoriesUseCase } from '~modules/categories/applicat
 import DCategoryForm from '~modules/categories/ui/organisms/DCategoryForm.vue'
 import DCategoryCard from '~modules/categories/ui/molecules/DCategoryCard.vue'
 import DCategorySkeleton from '~modules/categories/ui/molecules/DCategorySkeleton.vue'
+import DPageHeader from '~shared/ui/organisms/DPageHeader.vue'
+import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
+import DDarkModeToggle from '~shared/ui/atoms/DDarkModeToggle.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
-import { useToast } from '~shared/composables/useToast'
+import { useToast } from '~~/src/shared/composables/useToast'
 import { useConfirm } from '~shared/composables/useConfirm'
+import { useDarkMode } from '~shared/composables/useDarkMode'
+import { useSharedHeader } from '~shared/composables/useSharedHeader'
 
 // Add auth middleware
 definePageMeta({
@@ -124,7 +127,7 @@ definePageMeta({
       if (!user.value) {
         return navigateTo('/login')
       }
-      
+
       if (user.value) {
         return true
       }
@@ -137,6 +140,8 @@ const { user } = useAuth()
 const categoryRepository = useCategoryRepository()
 const toast = useToast()
 const confirm = useConfirm()
+const { isDark, toggle: toggleDarkMode } = useDarkMode()
+const { handleBack } = useSharedHeader()
 
 const categories = ref<Category[]>([])
 const editingCategory = ref<Category | null>(null)
@@ -248,7 +253,7 @@ async function confirmDelete(category: Category) {
     // Remove from list
     categories.value = categories.value.filter((c) => c.id !== category.id)
 
-    // Cancel edit if deleting the category being edited
+    // Cancel edit if deleting category being edited
     if (editingCategory.value?.id === category.id) {
       editingCategory.value = null
     }

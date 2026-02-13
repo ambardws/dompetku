@@ -10,7 +10,7 @@
       >
         <template #actions-menu>
           <DActionsMenu
-            @export="handleExport"
+            @export="(format) => handleExport(transactions, format)"
             @manage-categories="router.push('/categories')"
             @link-bot="openBotLinkDialog"
             @logout="handleLogout"
@@ -42,13 +42,13 @@
             <div class="flex items-center gap-2.5">
               <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                 <svg class="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002 2V7a2 2 0 002-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 002" />
                 </svg>
               </div>
               <h2 class="text-lg font-bold text-gray-900 dark:text-white">Semua Transaksi</h2>
             </div>
             <span class="text-sm text-gray-500 dark:text-gray-400">
-              {{ transactions.length }} transaksi
+              {{ allTransactions.length }} transaksi
             </span>
           </div>
 
@@ -90,10 +90,8 @@ import { useRouter } from 'vue-router'
 import { useTransactionRepository } from '~shared/composables/useTransactionRepository'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
 import { GetTransactionsByPeriodUseCase } from '~modules/transactions/application/use-cases/GetTransactionsByPeriodUseCase'
-import { ExportTransactionsUseCase } from '~modules/transactions/application/use-cases/ExportTransactionsUseCase'
-import type { Transaction, ExportFormat } from '~modules/transactions/domain/entities/Transaction'
+import type { Transaction } from '~modules/transactions/domain/entities/Transaction'
 import type { PeriodValue } from '~modules/analytics/ui/molecules/DPeriodSelector.vue'
-import { downloadFile } from '~shared/utils/downloadFile'
 import DTransactionList from '~modules/transactions/ui/organisms/DTransactionList.vue'
 import DPeriodSelector from '~modules/analytics/ui/molecules/DPeriodSelector.vue'
 import DPageHeader from '~shared/ui/organisms/DPageHeader.vue'
@@ -107,16 +105,17 @@ import DFloatingActionButton from '~shared/ui/atoms/DFloatingActionButton.vue'
 import DCategoryFilter from '~modules/transactions/ui/molecules/DCategoryFilter.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useToast } from '~~/src/shared/composables/useToast'
-import { useBotLink } from '~shared/composables/useBotLink'
 import { useDarkMode } from '~shared/composables/useDarkMode'
 import { useConfirm } from '~shared/composables/useConfirm'
 import { useTransactionRealtime } from '~shared/composables/useTransactionRealtime'
 import type { Category } from '~modules/categories/domain/entities/Category'
+import { useSharedHeader } from '~shared/composables/useSharedHeader'
+import { useHeaderActions } from '~shared/composables/useHeaderActions'
 
 // Add auth middleware
 definePageMeta({
   middleware: [
-    async function (to, from) {
+    async function () {
       if (process.server) {
         return
       }
@@ -139,7 +138,7 @@ definePageMeta({
   ]
 })
 
-const { user, logout } = useAuth()
+const { user } = useAuth()
 const transactionRepository = useTransactionRepository()
 const categoryRepository = useCategoryRepository()
 const router = useRouter()
@@ -147,21 +146,23 @@ const toast = useToast()
 const { isDark, toggle: toggleDarkMode } = useDarkMode()
 const confirm = useConfirm()
 const { subscribe: subscribeToTransactions } = useTransactionRealtime()
+const { handleLogout } = useSharedHeader()
 
-// Bot linking
+// Header actions (export, bot link)
 const {
+  showBotLinkDialog,
   isGeneratingToken,
   linkToken,
-  error: botLinkError,
-  generateLinkToken,
-  copyTokenToClipboard,
-  getTimeRemaining
-} = useBotLink()
-
-const showBotLinkDialog = ref(false)
-const botTokenTimeRemaining = computed(() => getTimeRemaining())
+  botLinkError,
+  botTokenTimeRemaining,
+  handleExport,
+  openBotLinkDialog,
+  handleGenerateLinkToken,
+  handleCopyToken
+} = useHeaderActions()
 
 const transactions = ref<Transaction[]>([])
+const allTransactions = ref<Transaction[]>([])
 const currentPeriod = ref<PeriodValue>({
   from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   to: new Date(),
@@ -171,12 +172,16 @@ const categories = ref<Category[]>([])
 const isLoadingCategories = ref(false)
 const isLoading = ref(false)
 
+// Track loaded data to avoid unnecessary API calls
+const loadedPeriodKey = ref<string>('')
+
+// Summary based on ALL transactions (not filtered by category)
 const summary = computed(() => {
-  const income = transactions.value
+  const income = allTransactions.value
     .filter(t => t.type === 'income')
     .reduce((sum, t) => sum + t.amount, 0)
 
-  const expense = transactions.value
+  const expense = allTransactions.value
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0)
 
@@ -208,22 +213,37 @@ const loadCategories = async () => {
 const loadTransactions = async () => {
   if (!user.value?.id) return
 
+  // Create a unique key for current period and category filter
+  const periodKey = `${currentPeriod.value.from.getTime()}-${currentPeriod.value.to.getTime()}-${selectedCategory.value}`
+
+  // Check if data is already loaded for this specific combination
+  if (loadedPeriodKey.value === periodKey) {
+    // Data already loaded, skip API call
+    return
+  }
+
   isLoading.value = true
   try {
     const useCase = new GetTransactionsByPeriodUseCase(transactionRepository)
 
-    const allTransactions = await useCase.execute({
+    const fetchedTransactions = await useCase.execute({
       userId: user.value.id,
       from: currentPeriod.value.from,
       to: currentPeriod.value.to
     })
 
-    // Apply category filter
+    // Store all transactions for summary
+    allTransactions.value = fetchedTransactions
+
+    // Apply category filter for display list
     if (selectedCategory.value) {
-      transactions.value = allTransactions.filter(t => t.categoryId === selectedCategory.value)
+      transactions.value = fetchedTransactions.filter(t => t.categoryId === selectedCategory.value)
     } else {
-      transactions.value = allTransactions
+      transactions.value = fetchedTransactions
     }
+
+    // Mark data as loaded
+    loadedPeriodKey.value = periodKey
   } catch (error) {
     toast.error('Gagal memuat transaksi')
     console.error('Failed to load transactions:', error)
@@ -241,22 +261,6 @@ watch(currentPeriod, async () => {
 watch(selectedCategory, async () => {
   await loadTransactions()
 })
-
-const handleLogout = async () => {
-  const confirmed = await confirm.warning(
-    'Keluar dari Akun',
-    'Apakah Anda yakin ingin keluar dari akun? Anda perlu login kembali untuk mengakses aplikasi.',
-    'Ya, Keluar',
-    'Batal'
-  )
-
-  if (!confirmed) return
-
-  const result = await logout()
-  if (result.success) {
-    await router.push('/login')
-  }
-}
 
 const handleEditTransaction = (transaction: Transaction) => {
   router.push(`/transactions/add?edit=${transaction.id}`)
@@ -279,46 +283,6 @@ const handleDeleteTransaction = async (transaction: Transaction) => {
   } catch (error) {
     console.error('Failed to delete transaction:', error)
     toast.error('Gagal menghapus transaksi')
-  }
-}
-
-const handleExport = async (format: ExportFormat) => {
-  try {
-    const useCase = new ExportTransactionsUseCase()
-    const result = await useCase.execute({
-      transactions: transactions.value,
-      format
-    })
-
-    downloadFile(result.content, result.filename, result.mimeType)
-    toast.success('Transaksi berhasil diekspor')
-  } catch (error) {
-    console.error('Failed to export transactions:', error)
-    toast.error('Gagal mengekspor transaksi')
-  }
-}
-
-// Bot linking handlers
-async function openBotLinkDialog() {
-  showBotLinkDialog.value = true
-  await handleGenerateLinkToken()
-}
-
-async function handleGenerateLinkToken() {
-  const result = await generateLinkToken()
-  if (result.success) {
-    toast.success('Link token berhasil dibuat')
-  } else {
-    toast.error(result.error || 'Gagal membuat link token')
-  }
-}
-
-async function handleCopyToken() {
-  const success = await copyTokenToClipboard()
-  if (success) {
-    toast.success('Token berhasil disalin')
-  } else {
-    toast.error('Gagal menyalin token')
   }
 }
 

@@ -48,6 +48,7 @@ import { useAuth } from '~shared/composables/useAuth'
 import { useToast } from '~~/src/shared/composables/useToast'
 import { useDarkMode } from '~shared/composables/useDarkMode'
 import { useConfirm } from '~shared/composables/useConfirm'
+import { useSharedHeader } from '~shared/composables/useSharedHeader'
 
 // Add auth middleware
 definePageMeta({
@@ -82,30 +83,11 @@ const route = useRoute()
 const toast = useToast()
 const { isDark, toggle: toggleDarkMode } = useDarkMode()
 const confirm = useConfirm()
+const { handleLogout, handleBack } = useSharedHeader()
 
 const isSubmitting = ref(false)
 const editMode = ref(false)
 const editingTransaction = ref<Transaction | null>(null)
-
-const handleBack = () => {
-  router.back()
-}
-
-const handleLogout = async () => {
-  const confirmed = await confirm.warning(
-    'Keluar dari Akun',
-    'Apakah Anda yakin ingin keluar dari akun? Anda perlu login kembali untuk mengakses aplikasi.',
-    'Ya, Keluar',
-    'Batal'
-  )
-
-  if (!confirmed) return
-
-  const result = await logout()
-  if (result.success) {
-    await router.push('/login')
-  }
-}
 
 const handleSubmitTransaction = async (data: {
   type: TransactionType

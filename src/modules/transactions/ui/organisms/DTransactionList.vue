@@ -123,7 +123,8 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import DSearchInput from '../atoms/DSearchInput.vue'
 import DTransactionRow from '../molecules/DTransactionRow.vue'
-import { Transaction } from '../../domain/entities/Transaction'
+import type { Transaction } from '../../domain/entities/Transaction'
+
 
 interface Props {
   transactions: Transaction[]

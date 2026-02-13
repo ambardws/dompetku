@@ -12,6 +12,7 @@
 import DToastContainer from '~shared/ui/organisms/DToastContainer.vue'
 import DConfirmDialogContainer from '~shared/ui/organisms/DConfirmDialogContainer.vue'
 import DBottomNav from '~shared/ui/organisms/DBottomNav.vue'
+import { useSharedHeaderProvider } from '~shared/composables/useSharedHeader'
 
 useHead({
   titleTemplate: '%s - Dompetku',
@@ -19,6 +20,9 @@ useHead({
     lang: 'id'
   }
 })
+
+// Provide shared header handlers to all pages
+useSharedHeaderProvider()
 
 // Hide bottom nav on login and register pages
 const route = useRoute()

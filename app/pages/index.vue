@@ -10,7 +10,7 @@
       >
         <template #actions-menu>
           <DActionsMenu
-            @export="handleExport"
+            @export="(format) => handleExport(transactions, format)"
             @manage-categories="router.push('/categories')"
             @link-bot="openBotLinkDialog"
             @logout="handleLogout"
@@ -121,12 +121,10 @@ import { useRouter } from 'vue-router'
 import { useTransactionRepository } from '~shared/composables/useTransactionRepository'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
 import { GetTransactionsByPeriodUseCase } from '~modules/transactions/application/use-cases/GetTransactionsByPeriodUseCase'
-import { ExportTransactionsUseCase } from '~modules/transactions/application/use-cases/ExportTransactionsUseCase'
 import { GetCategoryAnalyticsUseCase } from '~modules/analytics/application/use-cases/GetCategoryAnalyticsUseCase'
-import type { Transaction, ExportFormat } from '~modules/transactions/domain/entities/Transaction'
+import type { Transaction } from '~modules/transactions/domain/entities/Transaction'
 import type { AnalyticsSummary } from '~modules/analytics/domain/entities/CategoryAnalytics'
 import type { PeriodValue } from '~modules/analytics/ui/molecules/DPeriodSelector.vue'
-import { downloadFile } from '~shared/utils/downloadFile'
 import DTransactionList from '~modules/transactions/ui/organisms/DTransactionList.vue'
 import DTransactionListSkeleton from '~modules/transactions/ui/organisms/DTransactionListSkeleton.vue'
 import DAnalyticsCard from '~modules/analytics/ui/organisms/DAnalyticsCard.vue'
@@ -142,11 +140,12 @@ import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
 import DFloatingActionButton from '~shared/ui/atoms/DFloatingActionButton.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useToast } from '~~/src/shared/composables/useToast'
-import { useBotLink } from '~shared/composables/useBotLink'
 import { useDarkMode } from '~shared/composables/useDarkMode'
 import { useConfirm } from '~shared/composables/useConfirm'
 import { useTransactionRealtime } from '~shared/composables/useTransactionRealtime'
 import { useNotifications } from '~shared/composables/useNotifications'
+import { useSharedHeader } from '~shared/composables/useSharedHeader'
+import { useHeaderActions } from '~shared/composables/useHeaderActions'
 
 // Add auth middleware
 definePageMeta({
@@ -186,19 +185,20 @@ const { isDark, toggle: toggleDarkMode } = useDarkMode()
 const confirm = useConfirm()
 const { subscribe: subscribeToTransactions } = useTransactionRealtime()
 const { addNotification } = useNotifications()
+const { handleLogout } = useSharedHeader()
 
-// Bot linking
+// Header actions (export, bot link)
 const {
+  showBotLinkDialog,
   isGeneratingToken,
   linkToken,
-  error: botLinkError,
-  generateLinkToken,
-  copyTokenToClipboard,
-  getTimeRemaining
-} = useBotLink()
-
-const showBotLinkDialog = ref(false)
-const botTokenTimeRemaining = computed(() => getTimeRemaining())
+  botLinkError,
+  botTokenTimeRemaining,
+  handleExport,
+  openBotLinkDialog,
+  handleGenerateLinkToken,
+  handleCopyToken
+} = useHeaderActions()
 
 const transactions = ref<Transaction[]>([])
 const analyticsSummary = ref<AnalyticsSummary | null>(null)
@@ -279,22 +279,6 @@ const loadAnalytics = async () => {
   }
 }
 
-const handleLogout = async () => {
-  const confirmed = await confirm.warning(
-    'Keluar dari Akun',
-    'Apakah Anda yakin ingin keluar dari akun? Anda perlu login kembali untuk mengakses aplikasi.',
-    'Ya, Keluar',
-    'Batal'
-  )
-
-  if (!confirmed) return
-
-  const result = await logout()
-  if (result.success) {
-    await router.push('/login')
-  }
-}
-
 const handleEditTransaction = (transaction: Transaction) => {
   router.push(`/transactions/add?edit=${transaction.id}`)
 }
@@ -319,45 +303,6 @@ const handleDeleteTransaction = async (transaction: Transaction) => {
   } catch (error) {
     console.error('Failed to delete transaction:', error)
     toast.error('Gagal menghapus transaksi')
-  }
-}
-
-const handleExport = async (format: ExportFormat) => {
-  try {
-    const useCase = new ExportTransactionsUseCase()
-    const result = await useCase.execute({
-      transactions: transactions.value,
-      format
-    })
-
-    downloadFile(result.content, result.filename, result.mimeType)
-    toast.success('Transaksi berhasil diekspor')
-  } catch (error) {
-    console.error('Failed to export transactions:', error)
-    toast.error('Gagal mengekspor transaksi')
-  }
-}
-
-// Bot linking handlers
-async function openBotLinkDialog() {
-  showBotLinkDialog.value = true
-  await handleGenerateLinkToken()
-}
-
-async function handleGenerateLinkToken() {
-  const result = await generateLinkToken()
-  if (result.success) {
-    toast.success('Link token berhasil dibuat')
-  } else {
-    toast.error(result.error || 'Gagal membuat link token')
-  }
-}
-async function handleCopyToken() {
-  const success = await copyTokenToClipboard()
-  if (success) {
-    toast.success('Token berhasil disalin')
-  } else {
-    toast.error('Gagal menyalin token')
   }
 }
 
