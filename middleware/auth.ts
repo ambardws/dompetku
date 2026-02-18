@@ -2,14 +2,10 @@
  * Auth Middleware
  * Protects routes that require authentication
  */
-export default defineNuxtRouteMiddleware(async (to, from) => {
-  const { isAuthenticated, init } = useAuth()
+export default defineNuxtRouteMiddleware((to, from) => {
+  const { user } = useAuth()
 
-  // Initialize auth session
-  await init()
-
-  // If not authenticated, redirect to login
-  if (!isAuthenticated.value) {
+  if (!user.value) {
     return navigateTo('/login')
   }
 })

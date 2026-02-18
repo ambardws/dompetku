@@ -156,7 +156,7 @@ const selectedFilter = ref<FilterType>('all')
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 5
-const windowWidth = ref(window.innerWidth)
+const windowWidth = ref(0)
 
 // Update window width on resize
 const handleResize = () => {
@@ -164,6 +164,7 @@ const handleResize = () => {
 }
 
 onMounted(() => {
+  windowWidth.value = window.innerWidth
   window.addEventListener('resize', handleResize)
 })
 

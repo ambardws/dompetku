@@ -115,7 +115,8 @@ import { useHeaderActions } from '~shared/composables/useHeaderActions'
 // Add auth middleware
 definePageMeta({
   middleware: [
-    async function () {
+    async function (to, from) {
+      // Only run on client-side to avoid SSR issues
       if (process.server) {
         return
       }
@@ -123,6 +124,7 @@ definePageMeta({
       try {
         const { user, init } = useAuth()
 
+        // Initialize auth session if not already loaded
         if (!user.value) {
           await init()
         }
@@ -131,7 +133,6 @@ definePageMeta({
           return navigateTo('/login')
         }
       } catch (error) {
-        console.error('Auth middleware error:', error)
         return navigateTo('/login')
       }
     }
@@ -204,20 +205,19 @@ const loadCategories = async () => {
     categories.value = await categoryRepository.getByUserId(user.value.id)
   } catch (error) {
     toast.error('Gagal memuat kategori')
-    console.error('Failed to load categories:', error)
   } finally {
     isLoadingCategories.value = false
   }
 }
 
-const loadTransactions = async () => {
+const loadTransactions = async (forceReload = false) => {
   if (!user.value?.id) return
 
   // Create a unique key for current period and category filter
   const periodKey = `${currentPeriod.value.from.getTime()}-${currentPeriod.value.to.getTime()}-${selectedCategory.value}`
 
-  // Check if data is already loaded for this specific combination
-  if (loadedPeriodKey.value === periodKey) {
+  // Check if data is already loaded for this specific combination (unless force reload)
+  if (!forceReload && loadedPeriodKey.value === periodKey) {
     // Data already loaded, skip API call
     return
   }
@@ -246,18 +246,15 @@ const loadTransactions = async () => {
     loadedPeriodKey.value = periodKey
   } catch (error) {
     toast.error('Gagal memuat transaksi')
-    console.error('Failed to load transactions:', error)
   } finally {
     isLoading.value = false
   }
 }
 
-// Watch for period changes and reload data
 watch(currentPeriod, async () => {
   await loadTransactions()
 }, { deep: true })
 
-// Watch for category changes and reload data
 watch(selectedCategory, async () => {
   await loadTransactions()
 })
@@ -278,10 +275,9 @@ const handleDeleteTransaction = async (transaction: Transaction) => {
 
   try {
     await transactionRepository.delete(transaction.id)
-    transactions.value = transactions.value.filter(t => t.id !== transaction.id)
+    await loadTransactions(true)
     toast.success('Transaksi berhasil dihapus')
   } catch (error) {
-    console.error('Failed to delete transaction:', error)
     toast.error('Gagal menghapus transaksi')
   }
 }
@@ -290,17 +286,16 @@ onMounted(async () => {
   await loadCategories()
   await loadTransactions()
 
-  // Setup realtime subscription for transactions
   if (user.value?.id) {
     subscribeToTransactions(user.value.id, {
       onInsert: async () => {
-        await loadTransactions()
+        await loadTransactions(true)
       },
       onUpdate: async () => {
-        await loadTransactions()
+        await loadTransactions(true)
       },
       onDelete: async () => {
-        await loadTransactions()
+        await loadTransactions(true)
       }
     })
   }

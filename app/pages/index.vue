@@ -169,7 +169,6 @@ definePageMeta({
           return navigateTo('/login')
         }
       } catch (error) {
-        console.error('Auth middleware error:', error)
         return navigateTo('/login')
       }
     }
@@ -253,7 +252,6 @@ const loadTransactions = async () => {
     })
   } catch (error) {
     toast.error('Gagal memuat transaksi')
-    console.error('Failed to load transactions:', error)
   } finally {
     isLoading.value = false
   }
@@ -273,7 +271,6 @@ const loadAnalytics = async () => {
     })
   } catch (error) {
     toast.error('Gagal memuat analisis')
-    console.error('Failed to load analytics:', error)
   } finally {
     isLoadingAnalytics.value = false
   }
@@ -295,13 +292,9 @@ const handleDeleteTransaction = async (transaction: Transaction) => {
 
   try {
     await transactionRepository.delete(transaction.id)
-    transactions.value = transactions.value.filter(t => t.id !== transaction.id)
-
-    // Reload analytics after deleting transaction
-    await loadAnalytics()
+    await Promise.all([loadTransactions(), loadAnalytics()])
     toast.success('Transaksi berhasil dihapus')
   } catch (error) {
-    console.error('Failed to delete transaction:', error)
     toast.error('Gagal menghapus transaksi')
   }
 }

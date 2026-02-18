@@ -31,7 +31,6 @@ export function useHeaderActions() {
       downloadFile(result.content, result.filename, result.mimeType)
       toast.success('Transaksi berhasil diekspor')
     } catch (error) {
-      console.error('Failed to export transactions:', error)
       toast.error('Gagal mengekspor transaksi')
     }
   }

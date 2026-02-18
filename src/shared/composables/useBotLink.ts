@@ -63,7 +63,6 @@ export function useBotLink() {
         throw new Error('Failed to generate link token')
       }
     } catch (err) {
-      console.error('Generate link token error:', err)
       error.value = err instanceof Error ? err.message : 'Failed to generate link token'
       return {
         success: false,
@@ -93,7 +92,6 @@ export function useBotLink() {
       await navigator.clipboard.writeText(linkToken.value)
       return true
     } catch (err) {
-      console.error('Copy to clipboard error:', err)
       return false
     }
   }

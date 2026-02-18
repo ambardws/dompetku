@@ -128,7 +128,6 @@ export function useAuth() {
     try {
       session.value = await getSessionUseCase.execute()
     } catch (e) {
-      console.error('Failed to refresh session:', e)
       session.value = null
     }
   }

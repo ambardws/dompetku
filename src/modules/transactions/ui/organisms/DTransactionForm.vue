@@ -243,7 +243,6 @@ onMounted(async () => {
       categories.value = await initUseCase.execute(user.value.id)
     }
   } catch (error) {
-    console.error('Failed to load categories:', error)
   } finally {
     loadingCategories.value = false
   }

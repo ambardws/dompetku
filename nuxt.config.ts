@@ -4,6 +4,7 @@ import { URL } from 'node:url'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
+
   devtools: { enabled: true },
 
   srcDir: 'app/',
@@ -47,11 +48,12 @@ export default defineNuxtConfig({
     }
   },
 
-  // Runtime config for server-side access
+  // Runtime config for client-side environment variables
   runtimeConfig: {
     public: {
-      supabaseUrl: process.env.SUPABASE_URL,
-      supabaseKey: process.env.SUPABASE_KEY
+      supabaseUrl: process.env.SUPABASE_URL || 'https://elytjqsagnibkobkyhl.supabase.co',
+      supabaseAnonKey: process.env.SUPABASE_KEY || '',
+      supabaseKey: process.env.SUPABASE_KEY || ''
     },
     telegramBotToken: process.env.TELEGRAM_BOT_TOKEN
   },
@@ -78,13 +80,13 @@ export default defineNuxtConfig({
     }
   },
 
-  // PWA Configuration
+  // PWA configuration
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
       name: 'Dompetku - Personal Finance Manager',
       short_name: 'Dompetku',
-      description: 'Kelola keuangan pribadi dengan mudah',
+      description: 'Kelola keuangan dengan mudah',
       theme_color: '#10b981',
       background_color: '#ffffff',
       display: 'standalone',

@@ -122,14 +122,20 @@ import { useSharedHeader } from '~shared/composables/useSharedHeader'
 // Add auth middleware
 definePageMeta({
   middleware: [
-    function (to, from) {
-      const { user } = useAuth()
-      if (!user.value) {
-        return navigateTo('/login')
+    async function (to, from) {
+      // Only run on client-side to avoid SSR issues
+      if (process.server) {
+        return
       }
 
-      if (user.value) {
-        return true
+      try {
+        const { user } = useAuth()
+
+        if (!user.value) {
+          return navigateTo('/login')
+        }
+      } catch (error) {
+        return navigateTo('/login')
       }
     }
   ]
@@ -170,7 +176,6 @@ async function loadCategories() {
       categories.value = await initUseCase.execute(user.value.id)
     }
   } catch (error) {
-    console.error('Failed to load categories:', error)
     toast.error('Failed to load categories')
   } finally {
     isLoading.value = false
@@ -188,7 +193,6 @@ async function handleSubmit(data: {
   isSubmitting.value = true
   try {
     if (editingCategory.value) {
-      // Update existing category
       const updateUseCase = new UpdateCategoryUseCase(categoryRepository)
       const updated = await updateUseCase.execute(editingCategory.value.id, {
         name: data.name,
@@ -196,7 +200,6 @@ async function handleSubmit(data: {
         color: data.color,
       })
 
-      // Update in list
       const index = categories.value.findIndex((c) => c.id === updated.id)
       if (index !== -1) {
         categories.value[index] = updated
@@ -205,7 +208,6 @@ async function handleSubmit(data: {
       toast.success('Category updated successfully')
       editingCategory.value = null
     } else {
-      // Create new category
       const addUseCase = new AddCategoryUseCase(categoryRepository)
       const newCategory = await addUseCase.execute({
         userId: user.value.id,
@@ -219,7 +221,6 @@ async function handleSubmit(data: {
       toast.success('Category created successfully')
     }
   } catch (error) {
-    console.error('Failed to save category:', error)
     toast.error(error instanceof Error ? error.message : 'Failed to save category')
   } finally {
     isSubmitting.value = false
@@ -250,17 +251,14 @@ async function confirmDelete(category: Category) {
     const deleteUseCase = new DeleteCategoryUseCase(categoryRepository)
     await deleteUseCase.execute(category.id)
 
-    // Remove from list
     categories.value = categories.value.filter((c) => c.id !== category.id)
 
-    // Cancel edit if deleting category being edited
     if (editingCategory.value?.id === category.id) {
       editingCategory.value = null
     }
 
     toast.success('Category deleted successfully')
   } catch (error) {
-    console.error('Failed to delete category:', error)
     toast.error(error instanceof Error ? error.message : 'Failed to delete category')
   }
 }

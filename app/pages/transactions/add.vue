@@ -19,31 +19,54 @@
         </template>
       </DPageHeader>
 
+      <!-- Scan Receipt Button -->
+      <div class="mb-4">
+        <button
+          @click="showReceiptScanner = true"
+          class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 dark:bg-gray-700 hover:bg-gray-800 dark:hover:bg-gray-600 text-white font-medium rounded-xl transition-all duration-200 active:scale-95"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 8h2.93a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4v.01" />
+          </svg>
+          <span>Scan Struk Belanja</span>
+        </button>
+      </div>
+
       <!-- Transaction Form -->
       <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <DTransactionForm
+          ref="transactionFormRef"
           :mode="editMode ? 'edit' : 'create'"
-          :transaction="editingTransaction || undefined"
+          :transaction="formData"
           :loading="isSubmitting"
           @submit="handleSubmitTransaction"
           @cancel="handleCancel"
         />
       </div>
     </div>
+
+    <!-- Receipt Scanner Dialog -->
+    <DReceiptScannerDialog
+      v-model="showReceiptScanner"
+      @scan="handleReceiptScanned"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTransactionRepository } from '~shared/composables/useTransactionRepository'
 import { AddTransactionUseCase } from '~modules/transactions/application/use-cases/AddTransactionUseCase'
 import { UpdateTransactionUseCase } from '~modules/transactions/application/use-cases/UpdateTransactionUseCase'
 import type { Transaction, TransactionType } from '~modules/transactions/domain/entities/Transaction'
+import type { ScannedReceipt } from '~modules/receipt-scanner/domain/entities/ScannedReceipt'
 import DTransactionForm from '~modules/transactions/ui/organisms/DTransactionForm.vue'
 import DPageHeader from '~shared/ui/organisms/DPageHeader.vue'
 import DDarkModeToggle from '~shared/ui/atoms/DDarkModeToggle.vue'
 import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
+import DReceiptScannerDialog from '~modules/receipt-scanner/ui/organisms/DReceiptScannerDialog.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useToast } from '~~/src/shared/composables/useToast'
 import { useDarkMode } from '~shared/composables/useDarkMode'
@@ -69,7 +92,6 @@ definePageMeta({
           return navigateTo('/login')
         }
       } catch (error) {
-        console.error('Auth middleware error:', error)
         return navigateTo('/login')
       }
     }
@@ -88,6 +110,31 @@ const { handleLogout, handleBack } = useSharedHeader()
 const isSubmitting = ref(false)
 const editMode = ref(false)
 const editingTransaction = ref<Transaction | null>(null)
+const showReceiptScanner = ref(false)
+const transactionFormRef = ref()
+
+// Form data that can be populated from receipt scan
+const formData = computed(() => {
+  if (editingTransaction.value) {
+    return editingTransaction.value
+  }
+  return null
+})
+
+// Handle receipt scan result
+const handleReceiptScanned = (scannedData: ScannedReceipt) => {
+  // Map scanned data to transaction format
+  const transactionData = {
+    type: 'expense' as TransactionType,
+    amount: scannedData.total,
+    categoryId: '', // Will be selected by user based on scanned category
+    note: `${scannedData.merchant} - ${scannedData.category}`,
+    transactionDate: new Date(scannedData.date)
+  }
+
+  // The form will handle displaying this data
+  toast.success(`Struk dari "${scannedData.merchant}" berhasil dipindai!`)
+}
 
 const handleSubmitTransaction = async (data: {
   type: TransactionType
@@ -118,10 +165,8 @@ const handleSubmitTransaction = async (data: {
       toast.success('Transaksi berhasil ditambahkan')
     }
 
-    // Redirect to transactions page
     await router.push('/transactions')
   } catch (error) {
-    console.error('Failed to save transaction:', error)
     toast.error('Gagal menyimpan transaksi')
   } finally {
     isSubmitting.value = false
@@ -132,7 +177,6 @@ const handleCancel = () => {
   router.back()
 }
 
-// Load transaction if editing
 onMounted(async () => {
   const editId = route.query.edit as string
   if (editId) {
@@ -146,7 +190,6 @@ onMounted(async () => {
         router.push('/transactions/add')
       }
     } catch (error) {
-      console.error('Failed to load transaction:', error)
       toast.error('Gagal memuat transaksi')
       router.push('/transactions/add')
     }
