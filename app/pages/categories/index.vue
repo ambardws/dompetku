@@ -123,13 +123,16 @@ import { useSharedHeader } from '~shared/composables/useSharedHeader'
 definePageMeta({
   middleware: [
     async function (to, from) {
-      // Only run on client-side to avoid SSR issues
       if (process.server) {
         return
       }
 
       try {
-        const { user } = useAuth()
+        const { user, init } = useAuth()
+
+        if (!user.value) {
+          await init()
+        }
 
         if (!user.value) {
           return navigateTo('/login')

@@ -113,26 +113,22 @@ const editingTransaction = ref<Transaction | null>(null)
 const showReceiptScanner = ref(false)
 const transactionFormRef = ref()
 
-// Form data that can be populated from receipt scan
-const formData = computed(() => {
+// Form data that can be populated from receipt scan or edit mode
+const formData = computed<Transaction | undefined>(() => {
   if (editingTransaction.value) {
     return editingTransaction.value
   }
-  return null
+  return undefined
 })
 
 // Handle receipt scan result
 const handleReceiptScanned = (scannedData: ScannedReceipt) => {
-  // Map scanned data to transaction format
-  const transactionData = {
-    type: 'expense' as TransactionType,
-    amount: scannedData.total,
-    categoryId: '', // Will be selected by user based on scanned category
-    note: `${scannedData.merchant} - ${scannedData.category}`,
-    transactionDate: new Date(scannedData.date)
-  }
-
-  // The form will handle displaying this data
+  // TODO: Populate form with scanned receipt data
+  // Note: Currently the form doesn't support pre-populating from scanned data.
+  // To implement this, we would need to:
+  // 1. Create a partial Transaction object with the scanned data
+  // 2. Pass it to the form component via the transaction prop
+  // 3. The form component would need to handle partial transaction data
   toast.success(`Struk dari "${scannedData.merchant}" berhasil dipindai!`)
 }
 
