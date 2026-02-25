@@ -1,22 +1,22 @@
 <template>
   <form class="space-y-6" @submit.prevent="handleSubmit">
     <div class="space-y-5">
-      <div class="grid grid-cols-2 gap-3 p-1 bg-gray-100 dark:bg-gray-700 rounded-xl">
+      <div class="grid grid-cols-2 gap-1 p-0.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
         <button
           v-for="type in transactionTypes"
           :key="type.value"
           type="button"
           :class="[
-            'relative py-3 px-6 rounded-lg font-semibold transition-all duration-200',
+            'relative py-2 px-3 rounded-md text-sm font-medium transition-all duration-200',
             formData.type === type.value
               ? type.value === 'income'
-                ? 'bg-white dark:bg-gray-800 text-emerald-700 dark:text-emerald-400 shadow-sm border border-emerald-200 dark:border-emerald-800'
-                : 'bg-white dark:bg-gray-800 text-rose-700 dark:text-rose-400 shadow-sm border border-rose-200 dark:border-rose-800'
-              : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                ? 'bg-white dark:bg-gray-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                : 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 shadow-sm'
+              : 'bg-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
           ]"
           @click="formData.type = type.value"
         >
-          <DIcon :name="type.icon" :size="18" class="inline mr-2" />
+          <DIcon :name="type.icon" :size="14" class="inline mr-1" />
           {{ type.label }}
         </button>
       </div>
