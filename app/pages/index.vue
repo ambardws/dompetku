@@ -12,6 +12,7 @@
           <DActionsMenu
             @export="(format) => handleExport(transactions, format)"
             @manage-categories="router.push('/categories')"
+            @manage-budgets="router.push('/budgets')"
             @link-bot="openBotLinkDialog"
             @logout="handleLogout"
           />

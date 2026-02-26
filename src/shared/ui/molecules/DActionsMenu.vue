@@ -27,6 +27,18 @@
         <span>Manage Categories</span>
       </button>
 
+      <!-- Manage Budgets -->
+      <button
+        type="button"
+        class="w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+        @click="handleManageBudgets"
+      >
+        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+        <span>Manage Budgets</span>
+      </button>
+
       <!-- Link Telegram Bot -->
       <button
         type="button"
@@ -92,6 +104,7 @@ import type { ExportFormat } from '~modules/transactions/domain/entities/Transac
 const emit = defineEmits<{
   export: [format: ExportFormat]
   manageCategories: []
+  manageBudgets: []
   linkBot: []
   logout: []
 }>()
@@ -109,6 +122,11 @@ const handleExport = (format: ExportFormat) => {
 
 const handleManageCategories = () => {
   emit('manageCategories')
+  showDropdown.value = false
+}
+
+const handleManageBudgets = () => {
+  emit('manageBudgets')
   showDropdown.value = false
 }
 

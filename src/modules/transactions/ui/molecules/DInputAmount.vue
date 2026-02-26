@@ -74,7 +74,7 @@ const emit = defineEmits<{
 const isFocused = ref(false)
 
 const displayValue = computed(() => {
-  if (props.modelValue === 0) return ''
+  if (props.modelValue === 0) return '0'
   return formatNumber(props.modelValue)
 })
 
