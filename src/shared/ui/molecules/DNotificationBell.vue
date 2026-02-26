@@ -64,7 +64,7 @@
         <!-- Header -->
         <div class="flex items-center justify-between px-3 py-2.5 sm:py-2 border-b border-gray-200 dark:border-gray-700">
           <h3 class="text-sm sm:text-sm font-bold text-gray-900 dark:text-white">
-            Notifikasi
+            Notifications
           </h3>
           <button
             v-if="unreadCount > 0"
@@ -72,7 +72,7 @@
             class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium whitespace-nowrap"
             type="button"
           >
-            Tandai dibaca
+            Mark as read
           </button>
         </div>
 
@@ -84,7 +84,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
             </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">Belum ada notifikasi</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">No notifications yet</p>
           </div>
 
           <div v-else>
@@ -137,7 +137,7 @@
             class="w-full text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium py-2 sm:py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 transition-colors"
             type="button"
           >
-            Hapus semua
+            Clear all
           </button>
         </div>
       </div>
@@ -188,7 +188,7 @@ const handleMarkAllAsRead = () => {
 }
 
 const handleClearAll = () => {
-  if (confirm('Hapus semua notifikasi?')) {
+  if (confirm('Clear all notifications?')) {
     clearAll()
     closeDropdown()
   }
@@ -203,15 +203,15 @@ const formatTimestamp = (timestamp: Date): string => {
   const days = Math.floor(hours / 24)
 
   if (seconds < 60) {
-    return 'Baru saja'
+    return 'Just now'
   } else if (minutes < 60) {
-    return `${minutes} menit yang lalu`
+    return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`
   } else if (hours < 24) {
-    return `${hours} jam yang lalu`
+    return `${hours} hour${hours !== 1 ? 's' : ''} ago`
   } else if (days < 7) {
-    return `${days} hari yang lalu`
+    return `${days} day${days !== 1 ? 's' : ''} ago`
   } else {
-    return timestamp.toLocaleDateString('id-ID', {
+    return timestamp.toLocaleDateString('en-US', {
       day: 'numeric',
       month: 'short',
       year: timestamp.getFullYear() !== now.getFullYear() ? 'numeric' : undefined

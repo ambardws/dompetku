@@ -2,7 +2,7 @@
   <div class="grid grid-cols-1 min-[640px]:grid-cols-3 gap-4">
     <!-- Balance Card -->
     <DSummaryCard
-      label="Saldo"
+      label="Balance"
       :value="summary.balance"
       variant="balance"
       subtitle="Balance"
@@ -16,7 +16,7 @@
 
     <!-- Income Card -->
     <DSummaryCard
-      label="Pemasukan"
+      label="Income"
       :value="summary.income"
       variant="income"
       subtitle="Income"
@@ -30,7 +30,7 @@
 
     <!-- Expense Card -->
     <DSummaryCard
-      label="Pengeluaran"
+      label="Expense"
       :value="summary.expense"
       variant="expense"
       subtitle="Expense"

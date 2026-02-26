@@ -9,22 +9,25 @@ import type { Budget } from '../domain/entities/Budget'
 export class SupabaseBudgetRepository implements BudgetRepository {
   constructor(private supabase: SupabaseClient) {}
 
-  async add(budget: Budget): Promise<void> {
-    const { error } = await this.supabase
+  async add(budget: Budget): Promise<Budget> {
+    const { data, error } = await this.supabase
       .from('budgets')
       .insert({
-        id: budget.id,
+        // Don't insert id - let database generate it with DEFAULT gen_random_uuid()
         user_id: budget.userId,
         category_id: budget.categoryId,
         amount: budget.amount,
-        period: budget.period,
-        created_at: budget.createdAt.toISOString(),
-        updated_at: budget.updatedAt.toISOString()
+        period: budget.period
+        // created_at and updated_at will be set by database defaults
       })
+      .select()
+      .single()
 
     if (error) {
       throw new Error(`Failed to add budget: ${error.message}`)
     }
+
+    return this.mapToEntity(data)
   }
 
   async getByUserId(userId: string): Promise<Budget[]> {

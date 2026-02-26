@@ -6,7 +6,7 @@
       class="w-full appearance-none px-3 py-2 pr-10 rounded-lg border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       @change="handleChange"
     >
-      <option value="">Semua Kategori</option>
+      <option value="">All Categories</option>
       <option
         v-for="category in categories"
         :key="category.id"

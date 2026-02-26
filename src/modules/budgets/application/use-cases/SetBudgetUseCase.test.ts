@@ -29,22 +29,36 @@ describe('SetBudgetUseCase', () => {
       amount: 1000000
     }
 
+    const mockBudget: Budget = {
+      id: 'generated-uuid-123',
+      userId: 'user-123',
+      categoryId: 'cat-food',
+      amount: 1000000,
+      period: 'monthly',
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
+    }
+
     it('should create new budget with valid input', async () => {
+      mockRepository.add = vi.fn().mockResolvedValue(mockBudget)
+
       const result = await useCase.execute(validInput)
 
       expect(result).toMatchObject({
+        id: 'generated-uuid-123',
         userId: 'user-123',
         categoryId: 'cat-food',
         amount: 1000000,
         period: 'monthly'
       })
-      expect(result.id).toBeDefined()
       expect(result.createdAt).toBeInstanceOf(Date)
       expect(result.updatedAt).toBeInstanceOf(Date)
-      expect(mockRepository.add).toHaveBeenCalledWith(result)
+      expect(mockRepository.add).toHaveBeenCalled()
     })
 
     it('should use default period (monthly) if not provided', async () => {
+      mockRepository.add = vi.fn().mockResolvedValue(mockBudget)
+
       const result = await useCase.execute(validInput)
 
       expect(result.period).toBe('monthly')
@@ -55,6 +69,7 @@ describe('SetBudgetUseCase', () => {
         ...validInput,
         period: 'monthly'
       }
+      mockRepository.add = vi.fn().mockResolvedValue(mockBudget)
 
       const result = await useCase.execute(input)
 
@@ -90,10 +105,17 @@ describe('SetBudgetUseCase', () => {
     })
 
     it('should generate unique IDs for different budgets', async () => {
+      const mockBudget2 = { ...mockBudget, id: 'generated-uuid-456' }
+
+      mockRepository.add = vi.fn()
+        .mockResolvedValueOnce(mockBudget)
+        .mockResolvedValueOnce(mockBudget2)
+
       const result1 = await useCase.execute(validInput)
       const result2 = await useCase.execute({ ...validInput, categoryId: 'cat-transport' })
 
-      expect(result1.id).not.toBe(result2.id)
+      expect(result1.id).toBe('generated-uuid-123')
+      expect(result2.id).toBe('generated-uuid-456')
     })
   })
 

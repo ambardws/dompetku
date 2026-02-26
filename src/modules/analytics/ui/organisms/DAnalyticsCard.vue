@@ -22,7 +22,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
               </svg>
             </div>
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Pemasukan</p>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Income</p>
           </div>
           <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Rp {{ formatAmount(summary.totalIncome) }}</p>
         </div>
@@ -34,7 +34,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
               </svg>
             </div>
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Pengeluaran</p>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Expense</p>
           </div>
           <p class="text-2xl font-bold text-rose-600 dark:text-rose-400">Rp {{ formatAmount(summary.totalExpense) }}</p>
         </div>
@@ -46,7 +46,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
               </svg>
             </div>
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Saldo</p>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Balance</p>
           </div>
           <p
             class="text-2xl font-bold"
@@ -68,7 +68,7 @@
               </svg>
             </div>
             <p class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-              Pengeluaran Terbesar
+              Highest Expense
             </p>
           </div>
           
@@ -88,7 +88,7 @@
                 Rp {{ formatAmount(summary.topExpenseCategory.totalAmount) }}
               </p>
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                {{ summary.topExpenseCategory.percentage }}% dari total
+                {{ summary.topExpenseCategory.percentage }}% of total
               </p>
             </div>
           </div>
@@ -102,13 +102,13 @@
             </div>
             <div class="flex-1">
               <p class="font-medium text-gray-400 dark:text-gray-600 mb-1">
-                Belum ada data
+                No data yet
               </p>
               <p class="text-sm font-medium text-gray-400 dark:text-gray-600">
                 Rp 0
               </p>
               <p class="text-xs text-gray-400 dark:text-gray-600 mt-0.5">
-                0% dari total
+                0% of total
               </p>
             </div>
           </div>
@@ -123,7 +123,7 @@
               </svg>
             </div>
             <p class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-              Pemasukan Terbesar
+              Highest Income
             </p>
           </div>
           
@@ -143,7 +143,7 @@
                 Rp {{ formatAmount(summary.topIncomeCategory.totalAmount) }}
               </p>
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                {{ summary.topIncomeCategory.percentage }}% dari total
+                {{ summary.topIncomeCategory.percentage }}% of total
               </p>
             </div>
           </div>
@@ -157,13 +157,13 @@
             </div>
             <div class="flex-1">
               <p class="font-medium text-gray-400 dark:text-gray-600 mb-1">
-                Belum ada data
+                No data yet
               </p>
               <p class="text-sm font-medium text-gray-400 dark:text-gray-600">
                 Rp 0
               </p>
               <p class="text-xs text-gray-400 dark:text-gray-600 mt-0.5">
-                0% dari total
+                0% of total
               </p>
             </div>
           </div>
@@ -176,14 +176,14 @@
         <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700">
           <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
             <div class="w-2 h-2 rounded-full bg-rose-500 dark:bg-rose-400"></div>
-            Pengeluaran per Kategori
+            Expenses by Category
           </h4>
           
           <!-- Show chart if has data -->
           <div v-if="summary && summary.expenseByCategory.length > 0">
             <DCategoryChart
               :categories="summary.expenseByCategory"
-              title="Pengeluaran"
+              title="Expenses"
               :size="chartSize"
             />
           </div>
@@ -237,7 +237,7 @@
               </div>
             </div>
             <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
-              Belum ada data pengeluaran
+              No expense data yet
             </p>
           </div>
         </div>
@@ -246,14 +246,14 @@
         <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700">
           <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
             <div class="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400"></div>
-            Pemasukan per Kategori
+            Income by Category
           </h4>
           
           <!-- Show chart if has data -->
           <div v-if="summary && summary.incomeByCategory.length > 0">
             <DCategoryChart
               :categories="summary.incomeByCategory"
-              title="Pemasukan"
+              title="Income"
               :size="chartSize"
             />
           </div>
@@ -307,7 +307,7 @@
               </div>
             </div>
             <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
-              Belum ada data pemasukan
+              No income data yet
             </p>
           </div>
         </div>
@@ -327,7 +327,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  title: 'Analisis Keuangan',
+  title: 'Financial Analysis',
   chartSize: 200,
 })
 

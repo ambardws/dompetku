@@ -23,7 +23,7 @@
     <div class="mb-4">
       <DSearchInput
         v-model="searchQuery"
-        placeholder="Cari berdasarkan kategori atau catatan..."
+        placeholder="Search by category or note..."
         @search="handleSearch"
       />
     </div>
@@ -42,8 +42,8 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       </div>
-      <p class="text-gray-700 dark:text-gray-300 font-semibold text-lg mb-1">Belum ada transaksi</p>
-      <p class="text-sm text-gray-500 dark:text-gray-400">Mulai tambahkan transaksi pertama kamu</p>
+      <p class="text-gray-700 dark:text-gray-300 font-semibold text-lg mb-1">No transactions yet</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Start adding your first transaction</p>
     </div>
 
     <div v-else class="space-y-2">
@@ -60,7 +60,7 @@
     <div v-if="totalPages > 1 && !loading" class="pt-4 border-t border-gray-200 dark:border-gray-700">
       <!-- Info Text - Desktop -->
       <div class="hidden sm:block text-sm text-gray-600 dark:text-gray-400 mb-3">
-        Menampilkan {{ startIndex + 1 }}-{{ endIndex }} dari {{ filteredTransactions.length }} transaksi
+        Showing {{ startIndex + 1 }}-{{ endIndex }} of {{ filteredTransactions.length }} transaction{{ filteredTransactions.length !== 1 ? 's' : '' }}
       </div>
 
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -80,7 +80,7 @@
             ]"
             @click="goToPage(currentPage - 1)"
           >
-            <span class="hidden sm:inline">Sebelumnya</span>
+            <span class="hidden sm:inline">Previous</span>
             <span class="sm:hidden">Prev</span>
           </button>
 
@@ -147,9 +147,9 @@ const emit = defineEmits<{
 type FilterType = 'all' | 'income' | 'expense'
 
 const filters = [
-  { value: 'all' as FilterType, label: 'Semua' },
-  { value: 'income' as FilterType, label: 'Pemasukan' },
-  { value: 'expense' as FilterType, label: 'Pengeluaran' }
+  { value: 'all' as FilterType, label: 'All' },
+  { value: 'income' as FilterType, label: 'Income' },
+  { value: 'expense' as FilterType, label: 'Expense' }
 ]
 
 const selectedFilter = ref<FilterType>('all')

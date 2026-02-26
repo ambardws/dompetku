@@ -5,6 +5,9 @@ import { ExportTransactionsUseCase } from '~modules/transactions/application/use
 import { downloadFile } from '~shared/utils/downloadFile'
 import type { Transaction, ExportFormat } from '~modules/transactions/domain/entities/Transaction'
 
+// Global state for transactions (shared across components)
+const globalTransactions = ref<Transaction[]>([])
+
 export function useHeaderActions() {
   const toast = useToast()
   const {
@@ -19,20 +22,35 @@ export function useHeaderActions() {
   const showBotLinkDialog = ref(false)
   const botTokenTimeRemaining = computed(() => getTimeRemaining())
 
-  // Export handler - accepts transactions as parameter
-  const handleExport = async (transactions: Transaction[], format: ExportFormat) => {
+  // Export handler - uses global transactions
+  const handleExport = async (format: ExportFormat) => {
+    console.log('useHeaderActions handleExport called, format:', format)
+    console.log('globalTransactions:', globalTransactions.value)
+
+    if (!globalTransactions.value || globalTransactions.value.length === 0) {
+      toast.error('No transactions to export')
+      return
+    }
+
     try {
       const useCase = new ExportTransactionsUseCase()
       const result = await useCase.execute({
-        transactions,
+        transactions: globalTransactions.value,
         format
       })
 
       downloadFile(result.content, result.filename, result.mimeType)
-      toast.success('Transaksi berhasil diekspor')
+      toast.success('Transactions exported successfully')
     } catch (error) {
-      toast.error('Gagal mengekspor transaksi')
+      console.error('Export error:', error)
+      toast.error('Failed to export transactions')
     }
+  }
+
+  // Set transactions for export
+  const setTransactions = (transactions: Transaction[]) => {
+    console.log('setTransactions called with:', transactions.length)
+    globalTransactions.value = transactions
   }
 
   // Bot linking handlers
@@ -44,18 +62,18 @@ export function useHeaderActions() {
   const handleGenerateLinkToken = async () => {
     const result = await generateLinkToken()
     if (result.success) {
-      toast.success('Link token berhasil dibuat')
+      toast.success('Link token created successfully')
     } else {
-      toast.error(result.error || 'Gagal membuat link token')
+      toast.error(result.error || 'Failed to create link token')
     }
   }
 
   const handleCopyToken = async () => {
     const success = await copyTokenToClipboard()
     if (success) {
-      toast.success('Token berhasil disalin')
+      toast.success('Token copied successfully')
     } else {
-      toast.error('Gagal menyalin token')
+      toast.error('Failed to copy token')
     }
   }
 
@@ -69,6 +87,7 @@ export function useHeaderActions() {
 
     // Handlers
     handleExport,
+    setTransactions,
     openBotLinkDialog,
     handleGenerateLinkToken,
     handleCopyToken

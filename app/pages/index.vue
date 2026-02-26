@@ -1,123 +1,83 @@
 <template>
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-950 pb-20 transition-colors">
-    <div class="max-w-3xl mx-auto bg-white dark:bg-gray-900 min-h-screen shadow-xl px-4 py-6 sm:py-8">
-      <!-- Page Header -->
-      <DPageHeader
-        title="Dompetku"
-        subtitle="Kelola keuangan dengan mudah"
-        icon="💰"
-        :user-email="user?.email"
-      >
-        <template #actions-menu>
-          <DActionsMenu
-            @export="(format) => handleExport(transactions, format)"
-            @manage-categories="router.push('/categories')"
-            @manage-budgets="router.push('/budgets')"
-            @link-bot="openBotLinkDialog"
-            @logout="handleLogout"
-          />
-        </template>
-        <template #notification>
-          <DNotificationBell />
-        </template>
-        <template #dark-mode-toggle>
-          <DDarkModeToggle :is-dark="isDark" @toggle="toggleDarkMode" />
-        </template>
-      </DPageHeader>
-
-      <!-- Period Selector -->
-      <div class="mb-5 flex">
-        <DPeriodSelector
-          v-model="currentPeriod"
-        />
-      </div>
-
-      <!-- Summary Cards -->
-      <DSummaryCardsSkeleton v-if="isLoading" class="mb-6" />
-      <DSummaryCards v-else :summary="summary" class="mb-6" />
-
-      <!-- Analytics Section -->
-      <div class="mb-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <ClientOnly>
-          <template #fallback>
-            <DAnalyticsCardSkeleton />
-          </template>
-          <DAnalyticsCardSkeleton v-if="isLoadingAnalytics" />
-          <DAnalyticsCard
-            v-else
-            :summary="analyticsSummary"
-            title="Analisis Keuangan"
-          />
-        </ClientOnly>
-      </div>
-
-      <!-- Recent Transactions -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h2 class="text-lg font-bold text-gray-900 dark:text-white">Transaksi Terbaru</h2>
-            </div>
-            <NuxtLink
-              to="/transactions"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-white dark:hover:text-white bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-600 dark:hover:bg-blue-600 rounded-lg transition-all duration-200 hover:shadow-md"
-            >
-              Lihat Semua
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </NuxtLink>
-          </div>
-        </div>
-        <ClientOnly>
-          <template #fallback>
-            <DTransactionListSkeleton />
-          </template>
-          <DTransactionList
-            :transactions="recentTransactions"
-            :loading="isLoading"
-            @edit="handleEditTransaction"
-            @delete="handleDeleteTransaction"
-          />
-        </ClientOnly>
-        <div v-if="!isLoading && recentTransactions.length === 0" class="px-5 py-8 text-center">
-          <p class="text-gray-500 dark:text-gray-400 mb-3">Belum ada transaksi</p>
-          <button
-            @click="router.push('/transactions/add')"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Tambah Transaksi
-          </button>
-        </div>
-      </div>
+  <NuxtLayout>
+    <!-- Period Selector -->
+    <div class="mb-5 flex">
+      <DPeriodSelector
+        v-model="currentPeriod"
+      />
     </div>
 
-    <!-- Bot Link Dialog -->
-    <DBotLinkDialog
-      v-model="showBotLinkDialog"
-      :token="linkToken"
-      :is-generating="isGeneratingToken"
-      :error="botLinkError"
-      :time-remaining="botTokenTimeRemaining"
-      @retry="handleGenerateLinkToken"
-      @copy="handleCopyToken"
-    />
+    <!-- Summary Cards -->
+    <DSummaryCardsSkeleton v-if="isLoading" class="mb-6" />
+    <DSummaryCards v-else :summary="summary" class="mb-6" />
 
-    <!-- Floating Action Button -->
-    <DFloatingActionButton to="/transactions/add" />
-  </div>
+    <!-- Analytics Section -->
+    <div class="mb-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <ClientOnly>
+        <template #fallback>
+          <DAnalyticsCardSkeleton />
+        </template>
+        <DAnalyticsCardSkeleton v-if="isLoadingAnalytics" />
+        <DAnalyticsCard
+          v-else
+          :summary="analyticsSummary"
+          title="Financial Analysis"
+        />
+      </ClientOnly>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 class="text-lg font-bold text-slate-800 dark:text-white">Recent Transactions</h2>
+          </div>
+          <NuxtLink
+            to="/transactions"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-indigo-700 dark:text-slate-300 hover:text-indigo-800 dark:hover:text-white bg-indigo-50 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-slate-700 rounded-lg transition-all duration-200"
+          >
+            View All
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </NuxtLink>
+        </div>
+      </div>
+      <ClientOnly>
+        <template #fallback>
+          <DTransactionListSkeleton />
+        </template>
+        <DTransactionList
+          :transactions="recentTransactions"
+          :loading="isLoading"
+          @edit="handleEditTransaction"
+          @delete="handleDeleteTransaction"
+        />
+      </ClientOnly>
+      <div v-if="!isLoading && recentTransactions.length === 0" class="px-5 py-8 text-center">
+        <p class="text-slate-500 mb-3">No transactions yet</p>
+        <button
+          @click="router.push('/transactions/add')"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-lg transition-colors dark:bg-slate-700 dark:hover:bg-slate-600 shadow-sm hover:shadow"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Transaction
+        </button>
+      </div>
+    </div>
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, provide } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTransactionRepository } from '~shared/composables/useTransactionRepository'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
@@ -130,26 +90,19 @@ import DTransactionList from '~modules/transactions/ui/organisms/DTransactionLis
 import DTransactionListSkeleton from '~modules/transactions/ui/organisms/DTransactionListSkeleton.vue'
 import DAnalyticsCard from '~modules/analytics/ui/organisms/DAnalyticsCard.vue'
 import DPeriodSelector from '~modules/analytics/ui/molecules/DPeriodSelector.vue'
-import DPageHeader from '~shared/ui/organisms/DPageHeader.vue'
 import DSummaryCards from '~shared/ui/molecules/DSummaryCards.vue'
 import DSummaryCardsSkeleton from '~shared/ui/molecules/DSummaryCardsSkeleton.vue'
 import DAnalyticsCardSkeleton from '~shared/ui/organisms/DAnalyticsCardSkeleton.vue'
-import DActionsMenu from '~shared/ui/molecules/DActionsMenu.vue'
-import DBotLinkDialog from '~shared/ui/molecules/DBotLinkDialog.vue'
-import DDarkModeToggle from '~shared/ui/atoms/DDarkModeToggle.vue'
-import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
-import DFloatingActionButton from '~shared/ui/atoms/DFloatingActionButton.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useToast } from '~~/src/shared/composables/useToast'
-import { useDarkMode } from '~shared/composables/useDarkMode'
 import { useConfirm } from '~shared/composables/useConfirm'
 import { useTransactionRealtime } from '~shared/composables/useTransactionRealtime'
 import { useNotifications } from '~shared/composables/useNotifications'
-import { useSharedHeader } from '~shared/composables/useSharedHeader'
 import { useHeaderActions } from '~shared/composables/useHeaderActions'
 
-// Add auth middleware
+// Define layout and page meta
 definePageMeta({
+  layout: 'default',
   middleware: [
     async function (to, from) {
       // Only run on client-side to avoid SSR issues
@@ -176,16 +129,28 @@ definePageMeta({
   ]
 })
 
+// Page meta for layout
+const pageMeta = {
+  title: 'Dompetku',
+  subtitle: 'Manage your finances wisely',
+  icon: 'wallet',
+  showBackButton: false,
+  showActionsMenu: true,
+  showBudgetLink: true,
+  showFAB: true
+}
+
+// Make pageMeta available to layout via provide
+provide('pageMeta', pageMeta)
+
 const { user, logout } = useAuth()
 const transactionRepository = useTransactionRepository()
 const categoryRepository = useCategoryRepository()
 const router = useRouter()
 const toast = useToast()
-const { isDark, toggle: toggleDarkMode } = useDarkMode()
 const confirm = useConfirm()
 const { subscribe: subscribeToTransactions } = useTransactionRealtime()
 const { addNotification } = useNotifications()
-const { handleLogout } = useSharedHeader()
 
 // Header actions (export, bot link)
 const {
@@ -195,12 +160,32 @@ const {
   botLinkError,
   botTokenTimeRemaining,
   handleExport,
+  setTransactions,
   openBotLinkDialog,
   handleGenerateLinkToken,
   handleCopyToken
 } = useHeaderActions()
 
+// Make available to layout
+provide('headerActions', {
+  showBotLinkDialog,
+  isGeneratingToken,
+  linkToken,
+  botLinkError,
+  botTokenTimeRemaining,
+  handleExport,
+  openBotLinkDialog,
+  handleGenerateLinkToken,
+  handleCopyToken
+})
+
 const transactions = ref<Transaction[]>([])
+
+// Watch transactions and update global state for export
+watch(transactions, (newTransactions) => {
+  console.log('Transactions updated, calling setTransactions with:', newTransactions.length)
+  setTransactions(newTransactions)
+}, { deep: true })
 const analyticsSummary = ref<AnalyticsSummary | null>(null)
 const currentPeriod = ref<PeriodValue>({
   from: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // 1st of this month
@@ -252,7 +237,7 @@ const loadTransactions = async () => {
       to: currentPeriod.value.to
     })
   } catch (error) {
-    toast.error('Gagal memuat transaksi')
+    toast.error('Failed to load transactions')
   } finally {
     isLoading.value = false
   }
@@ -271,7 +256,7 @@ const loadAnalytics = async () => {
       to: currentPeriod.value.to
     })
   } catch (error) {
-    toast.error('Gagal memuat analisis')
+    toast.error('Failed to load analytics')
   } finally {
     isLoadingAnalytics.value = false
   }
@@ -283,10 +268,10 @@ const handleEditTransaction = (transaction: Transaction) => {
 
 const handleDeleteTransaction = async (transaction: Transaction) => {
   const confirmed = await confirm.danger(
-    'Hapus Transaksi',
-    `Apakah Anda yakin ingin menghapus transaksi ${transaction.type === 'income' ? 'pemasukan' : 'pengeluaran'} sebesar Rp ${formatAmount(transaction.amount)}? Tindakan ini tidak dapat dibatalkan.`,
-    'Ya, Hapus',
-    'Batal'
+    'Delete Transaction',
+    `Are you sure you want to delete this ${transaction.type === 'income' ? 'income' : 'expense'} transaction of Rp ${formatAmount(transaction.amount)}? This action cannot be undone.`,
+    'Yes, Delete',
+    'Cancel'
   )
 
   if (!confirmed) return
@@ -294,9 +279,9 @@ const handleDeleteTransaction = async (transaction: Transaction) => {
   try {
     await transactionRepository.delete(transaction.id)
     await Promise.all([loadTransactions(), loadAnalytics()])
-    toast.success('Transaksi berhasil dihapus')
+    toast.success('Transaction deleted successfully')
   } catch (error) {
-    toast.error('Gagal menghapus transaksi')
+    toast.error('Failed to delete transaction')
   }
 }
 
@@ -311,19 +296,17 @@ onMounted(async () => {
       onInsert: async (payload) => {
         // Show notification for new transaction
         const amount = payload.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-        const typeText = payload.type === 'income' ? 'Pemasukan' : 'Pengeluaran'
-        const emoji = payload.type === 'income' ? '💰' : '💸'
+        const typeText = payload.type === 'income' ? 'Income' : 'Expense'
         const category = payload.category
 
         // Show toast notification
-        toast.success(`${emoji} ${typeText} baru: Rp ${amount}`)
+        toast.success(`New transaction: Rp ${amount}`)
 
         // Add to notification center
         addNotification({
-          title: `${typeText} Baru`,
+          title: `New ${typeText}`,
           message: `${category} - Rp ${amount}`,
           type: 'success',
-          icon: emoji
         })
 
         // Reload data to get the latest transactions

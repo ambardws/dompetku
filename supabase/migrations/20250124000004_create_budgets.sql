@@ -1,8 +1,8 @@
 -- Create budgets table
 CREATE TABLE IF NOT EXISTS budgets (
-  id TEXT PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  category_id TEXT NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+  category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
   amount DECIMAL(15, 2) NOT NULL CHECK (amount > 0),
   period TEXT NOT NULL DEFAULT 'monthly' CHECK (period IN ('monthly')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -57,9 +57,9 @@ CREATE TRIGGER update_budgets_updated_at_trigger
 
 -- Add comments for documentation
 COMMENT ON TABLE budgets IS 'Stores monthly budget limits for categories';
-COMMENT ON COLUMN budgets.id IS 'Unique budget identifier';
+COMMENT ON COLUMN budgets.id IS 'Unique budget identifier (UUID)';
 COMMENT ON COLUMN budgets.user_id IS 'Reference to user (auth.users)';
-COMMENT ON COLUMN budgets.category_id IS 'Reference to category';
+COMMENT ON COLUMN budgets.category_id IS 'Reference to category (categories.id - UUID)';
 COMMENT ON COLUMN budgets.amount IS 'Budget limit amount';
 COMMENT ON COLUMN budgets.period IS 'Budget period (currently only monthly)';
 COMMENT ON COLUMN budgets.created_at IS 'Timestamp when budget was created';

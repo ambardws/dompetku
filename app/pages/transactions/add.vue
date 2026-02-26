@@ -1,16 +1,24 @@
 <template>
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-950 pb-20 transition-colors">
-    <div class="w-full max-w-3xl mx-auto bg-white dark:bg-gray-900 min-h-screen shadow-xl px-4 py-6 sm:py-8 pb-24">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 transition-colors">
+    <div class="w-full max-w-3xl mx-auto bg-white dark:bg-slate-900 min-h-screen shadow-lg px-4 py-6 sm:py-8 pb-24">
       <!-- Page Header -->
       <DPageHeader
-        title="Tambah Transaksi"
-        subtitle="Catat pemasukan atau pengeluaran Anda"
-        icon="💸"
+        :title="editMode ? 'Edit Transaction' : 'Add Transaction'"
+        subtitle="Record your income or expenses"
+        icon="plus"
         :user-email="user?.email"
         :show-back-button="true"
         @back="handleBack"
-        @logout="handleLogout"
       >
+        <template #actions-menu>
+          <DActionsMenu
+            :show-export="false"
+            @manage-categories="router.push('/categories')"
+            @manage-budgets="router.push('/budgets')"
+            @link-bot="() => {}"
+            @logout="handleLogout"
+          />
+        </template>
         <template #notification>
           <DNotificationBell />
         </template>
@@ -23,18 +31,18 @@
       <div class="mb-4">
         <button
           @click="showReceiptScanner = true"
-          class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 dark:bg-gray-700 hover:bg-gray-800 dark:hover:bg-gray-600 text-white font-medium rounded-xl transition-all duration-200 active:scale-95"
+          class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-indigo-700 dark:bg-slate-700 hover:bg-indigo-800 dark:hover:bg-slate-600 text-white font-medium rounded-xl transition-all duration-200 active:scale-95 shadow-md hover:shadow-lg"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 8h2.93a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4v.01" />
           </svg>
-          <span>Scan Struk Belanja</span>
+          <span>Scan Receipt</span>
         </button>
       </div>
 
       <!-- Transaction Form -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5">
         <DTransactionForm
           ref="transactionFormRef"
           :mode="editMode ? 'edit' : 'create'"
@@ -64,6 +72,7 @@ import type { Transaction, TransactionType } from '~modules/transactions/domain/
 import type { ScannedReceipt } from '~modules/receipt-scanner/domain/entities/ScannedReceipt'
 import DTransactionForm from '~modules/transactions/ui/organisms/DTransactionForm.vue'
 import DPageHeader from '~shared/ui/organisms/DPageHeader.vue'
+import DActionsMenu from '~shared/ui/molecules/DActionsMenu.vue'
 import DDarkModeToggle from '~shared/ui/atoms/DDarkModeToggle.vue'
 import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
 import DReceiptScannerDialog from '~modules/receipt-scanner/ui/organisms/DReceiptScannerDialog.vue'
@@ -129,7 +138,7 @@ const handleReceiptScanned = (scannedData: ScannedReceipt) => {
   // 1. Create a partial Transaction object with the scanned data
   // 2. Pass it to the form component via the transaction prop
   // 3. The form component would need to handle partial transaction data
-  toast.success(`Struk dari "${scannedData.merchant}" berhasil dipindai!`)
+  toast.success(`Receipt from "${scannedData.merchant}" successfully scanned!`)
 }
 
 const handleSubmitTransaction = async (data: {
@@ -151,19 +160,19 @@ const handleSubmitTransaction = async (data: {
         userId: user.value.id,
         ...data
       })
-      toast.success('Transaksi berhasil diperbarui')
+      toast.success('Transaction updated successfully')
     } else {
       const useCase = new AddTransactionUseCase(transactionRepository)
       await useCase.execute({
         userId: user.value.id,
         ...data
       })
-      toast.success('Transaksi berhasil ditambahkan')
+      toast.success('Transaction added successfully')
     }
 
     await router.push('/transactions')
   } catch (error) {
-    toast.error('Gagal menyimpan transaksi')
+    toast.error('Failed to save transaction')
   } finally {
     isSubmitting.value = false
   }
@@ -182,11 +191,11 @@ onMounted(async () => {
       if (transaction) {
         editingTransaction.value = transaction
       } else {
-        toast.error('Transaksi tidak ditemukan')
+        toast.error('Transaction not found')
         router.push('/transactions/add')
       }
     } catch (error) {
-      toast.error('Gagal memuat transaksi')
+      toast.error('Failed to load transaction')
       router.push('/transactions/add')
     }
   }

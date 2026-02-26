@@ -164,14 +164,14 @@
                 class="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
                 @click="goToToday"
               >
-                Hari Ini
+                Today
               </button>
               <button
                 type="button"
                 class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-primary-500 hover:bg-primary-600 rounded-xl transition-colors shadow-md"
                 @click="closeModal"
               >
-                Tutup
+                Close
               </button>
             </div>
           </div>
@@ -217,13 +217,13 @@ const emit = defineEmits<{
 const isOpen = ref(false)
 const viewDate = ref(new Date())
 
-// Month names in Indonesian
+// Month names in English
 const monthNames = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-  'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ]
 
-const weekdayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
+const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 const currentMonth = computed(() => monthNames[viewDate.value.getMonth()])
 const currentYear = computed(() => viewDate.value.getFullYear())

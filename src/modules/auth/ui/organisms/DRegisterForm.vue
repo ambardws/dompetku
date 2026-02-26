@@ -16,8 +16,8 @@
     <DPasswordInput
       v-model="form.password"
       label="Password"
-      placeholder="Minimal 8 karakter"
-      hint="Gunakan kombinasi huruf besar, kecil, dan angka"
+      placeholder="Minimum 8 characters"
+      hint="Use combination of uppercase, lowercase, and numbers"
       required
       :error="errors.password"
       :disabled="loading"
@@ -43,8 +43,8 @@
     <!-- Confirm Password Input -->
     <DPasswordInput
       v-model="form.confirmPassword"
-      label="Konfirmasi Password"
-      placeholder="Masukkan ulang password"
+      label="Confirm Password"
+      placeholder="Re-enter password"
       required
       :error="errors.confirmPassword"
       :disabled="loading"
@@ -76,17 +76,17 @@
       :disabled="!isFormValid"
       class="w-full"
     >
-      {{ loading ? 'Memproses...' : 'Buat Akun' }}
+      {{ loading ? 'Processing...' : 'Create Account' }}
     </DButton>
 
     <!-- Login Link -->
-    <p class="text-center text-sm text-slate-600">
-      Sudah punya akun?
+    <p class="text-center text-sm text-slate-600 dark:text-slate-400">
+      Already have an account?
       <a
         href="/login"
-        class="text-teal-600 hover:text-teal-700 font-semibold transition-colors"
+        class="text-indigo-700 dark:text-slate-300 hover:text-indigo-800 dark:hover:text-white font-semibold transition-colors"
       >
-        Login di sini
+        Login here
       </a>
     </p>
   </form>
@@ -166,23 +166,23 @@ const strengthTextColor = computed(() => {
 })
 
 const strengthText = computed(() => {
-  if (passwordStrength.value <= 1) return 'Lemah'
-  if (passwordStrength.value === 2) return 'Sedang'
-  if (passwordStrength.value === 3) return 'Kuat'
-  return 'Sangat Kuat'
+  if (passwordStrength.value <= 1) return 'Weak'
+  if (passwordStrength.value === 2) return 'Fair'
+  if (passwordStrength.value === 3) return 'Strong'
+  return 'Very Strong'
 })
 
 function validateEmail() {
   errors.value.email = ''
 
   if (!form.value.email.trim()) {
-    errors.value.email = 'Email wajib diisi'
+    errors.value.email = 'Email is required'
     return false
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(form.value.email)) {
-    errors.value.email = 'Format email tidak valid'
+    errors.value.email = 'Invalid email format'
     return false
   }
 
@@ -193,27 +193,27 @@ function validatePassword() {
   errors.value.password = ''
 
   if (!form.value.password) {
-    errors.value.password = 'Password wajib diisi'
+    errors.value.password = 'Password is required'
     return false
   }
 
   if (form.value.password.length < 8) {
-    errors.value.password = 'Password minimal 8 karakter'
+    errors.value.password = 'Password must be at least 8 characters'
     return false
   }
 
   if (!/[A-Z]/.test(form.value.password)) {
-    errors.value.password = 'Password harus mengandung huruf besar'
+    errors.value.password = 'Password must contain uppercase letter'
     return false
   }
 
   if (!/[a-z]/.test(form.value.password)) {
-    errors.value.password = 'Password harus mengandung huruf kecil'
+    errors.value.password = 'Password must contain lowercase letter'
     return false
   }
 
   if (!/[0-9]/.test(form.value.password)) {
-    errors.value.password = 'Password harus mengandung angka'
+    errors.value.password = 'Password must contain a number'
     return false
   }
 
@@ -224,12 +224,12 @@ function validateConfirmPassword() {
   errors.value.confirmPassword = ''
 
   if (!form.value.confirmPassword) {
-    errors.value.confirmPassword = 'Konfirmasi password wajib diisi'
+    errors.value.confirmPassword = 'Password confirmation is required'
     return false
   }
 
   if (form.value.password !== form.value.confirmPassword) {
-    errors.value.confirmPassword = 'Password tidak cocok'
+    errors.value.confirmPassword = 'Passwords do not match'
     return false
   }
 

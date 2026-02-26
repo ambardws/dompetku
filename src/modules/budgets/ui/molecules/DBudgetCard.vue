@@ -27,8 +27,8 @@
         class="px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0"
         :class="statusBadgeClasses"
       >
-        <span v-if="budgetStatus.status === 'safe'">✓ Aman</span>
-        <span v-else-if="budgetStatus.status === 'warning'">⚠ Hati-hati</span>
+        <span v-if="budgetStatus.status === 'safe'">✓ Safe</span>
+        <span v-else-if="budgetStatus.status === 'warning'">⚠ Caution</span>
         <span v-else>⚠ Over</span>
       </div>
     </div>
@@ -36,7 +36,7 @@
     <!-- Progress Section -->
     <div class="mb-3">
       <div class="flex items-center justify-between text-sm mb-2">
-        <span class="text-gray-600 dark:text-gray-400">Penggunaan</span>
+        <span class="text-gray-600 dark:text-gray-400">Usage</span>
         <span class="font-medium" :class="statusTextClass">
           {{ budgetStatus.percentage }}%
         </span>
@@ -57,7 +57,7 @@
           {{ formatCurrency(budgetStatus.spent) }}
         </span>
         <span class="text-gray-500 dark:text-gray-400">
-          dari {{ formatCurrency(budget.amount) }}
+          of {{ formatCurrency(budget.amount) }}
         </span>
       </div>
     </div>
@@ -69,10 +69,10 @@
       :class="statusMessageClass"
     >
       <span v-if="budgetStatus.status === 'warning'">
-        ⚠️ Pengeluaran sudah mencapai {{ budgetStatus.percentage }}%. Pertimbangkan untuk berhemat.
+        ⚠️ Expenses have reached {{ budgetStatus.percentage }}%. Consider saving more.
       </span>
       <span v-else>
-        ⚠️ Budget telah terlampaui {{ budgetStatus.percentage - 100 }}%. Kurangi pengeluaran untuk kategori ini.
+        ⚠️ Budget exceeded by {{ budgetStatus.percentage - 100 }}%. Reduce expenses for this category.
       </span>
     </div>
 
@@ -124,7 +124,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 function handleDelete() {
-  if (confirm(`Hapus budget untuk ${props.category.name}?`)) {
+  if (confirm(`Delete budget for ${props.category.name}?`)) {
     emit('delete')
   }
 }

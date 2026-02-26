@@ -3,13 +3,22 @@
     <div class="max-w-3xl mx-auto bg-white dark:bg-gray-900 min-h-screen shadow-xl px-4 py-6 sm:py-8 pb-24">
       <!-- Page Header -->
       <DPageHeader
-        title="Budget"
-        subtitle="Atur dan pantau budget pengeluaran Anda"
-        icon="💰"
+        title="Budgets"
+        subtitle="Set and monitor your expense budgets"
+        icon="wallet"
         :user-email="user?.email"
         :show-back-button="true"
         @back="handleBack"
       >
+        <template #actions-menu>
+          <DActionsMenu
+            :show-export="false"
+            @manage-categories="router.push('/categories')"
+            @manage-budgets="() => {}"
+            @link-bot="() => {}"
+            @logout="handleLogout"
+          />
+        </template>
         <template #notification>
           <DNotificationBell />
         </template>
@@ -34,8 +43,8 @@
             </svg>
           </div>
           <div>
-            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Ringkasan Budget</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Bulan {{ currentMonthName }}</p>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Budget Summary</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ currentMonthName }}</p>
           </div>
         </div>
 
@@ -48,7 +57,7 @@
           <!-- Stats Grid -->
           <div class="grid grid-cols-3 gap-3">
             <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 text-center">
-              <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Total Budget</p>
+              <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Total</p>
               <p class="text-base font-bold text-gray-900 dark:text-white">
                 {{ formatCurrencyCompact(totalBudget) }}
               </p>
@@ -80,13 +89,13 @@
               />
             </div>
             <div v-if="overallPercentage >= 100" class="mt-2 text-xs text-red-600 dark:text-red-400 font-medium">
-              ⚠️ Budget telah terlampaui
+              ⚠️ Budget exceeded
             </div>
             <div v-else-if="overallPercentage >= 80" class="mt-2 text-xs text-yellow-600 dark:text-yellow-400 font-medium">
-              ⚠️ Hampir mencapai limit budget
+              ⚠️ Approaching budget limit
             </div>
             <div v-else class="mt-2 text-xs text-green-600 dark:text-green-400 font-medium">
-              ✅ Penggunaan budget masih aman
+              ✅ Budget usage is safe
             </div>
           </div>
         </div>
@@ -103,7 +112,7 @@
               </svg>
             </div>
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-              {{ selectedBudget ? 'Edit Budget' : 'Set Budget Baru' }}
+              {{ selectedBudget ? 'Edit Budget' : 'Set New Budget' }}
             </h2>
           </div>
 
@@ -129,7 +138,7 @@
                     </svg>
                   </div>
                   <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                    Daftar Budget
+                    Budget List
                   </h2>
                 </div>
                 <span class="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
@@ -147,16 +156,16 @@
                   </svg>
                 </div>
                 <h3 class="text-base font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                  Belum ada budget
+                  No budgets yet
                 </h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  Atur budget untuk mengontrol pengeluaran bulanan Anda
+                  Set budgets to control your monthly expenses
                 </p>
                 <div class="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>Pilih kategori dan masukkan jumlah budget</span>
+                  <span>Select a category and enter budget amount</span>
                 </div>
               </div>
 
@@ -192,10 +201,10 @@
               </div>
               <div>
                 <h3 class="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-1">
-                  Tips Budget
+                  Budget Tips
                 </h3>
                 <p class="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
-                  Atur budget maksimal 50-70% dari pemasukan untuk kategori pengeluaran utama. Sisanya untuk tabungan dan investasi.
+                  Set maximum budget of 50-70% of your income for main expense categories. Allocate the rest for savings and investments.
                 </p>
               </div>
             </div>
@@ -212,6 +221,7 @@ import { useRouter } from 'vue-router'
 import { useToast } from '~shared/composables/useToast'
 import { useDarkMode } from '~shared/composables/useDarkMode'
 import { useAuth } from '~shared/composables/useAuth'
+import { useSharedHeader } from '~shared/composables/useSharedHeader'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
 import { useBudgetRepository } from '~shared/composables/useBudgetRepository'
 import { useTransactionRepository } from '~shared/composables/useTransactionRepository'
@@ -226,6 +236,7 @@ import DBudgetForm from '~modules/budgets/ui/molecules/DBudgetForm.vue'
 import DBudgetCard from '~modules/budgets/ui/molecules/DBudgetCard.vue'
 import DPeriodSelector from '~modules/analytics/ui/molecules/DPeriodSelector.vue'
 import DPageHeader from '~shared/ui/organisms/DPageHeader.vue'
+import DActionsMenu from '~shared/ui/molecules/DActionsMenu.vue'
 import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
 import DDarkModeToggle from '~shared/ui/atoms/DDarkModeToggle.vue'
 
@@ -261,6 +272,7 @@ const router = useRouter()
 const toast = useToast()
 const { isDark, toggle } = useDarkMode()
 const { user } = useAuth()
+const { handleLogout } = useSharedHeader()
 
 // Repositories
 const categoryRepository = useCategoryRepository()
@@ -304,8 +316,8 @@ const overallPercentage = computed(() => {
 })
 
 const currentMonthName = computed(() => {
-  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+  const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                   'July', 'August', 'September', 'October', 'November', 'December']
   return months[new Date().getMonth()]
 })
 
@@ -314,7 +326,7 @@ async function loadCategories() {
   try {
     categories.value = await categoryRepository.getByUserId(user.value!.id)
   } catch (error: any) {
-    toast.error('Gagal memuat kategori: ' + error.message)
+    toast.error('Failed to load categories: ' + error.message)
   }
 }
 
@@ -357,7 +369,7 @@ async function loadBudgets() {
 
     budgetsWithStatus.value = items.filter(item => item !== null)
   } catch (error: any) {
-    toast.error('Gagal memuat budget: ' + error.message)
+    toast.error('Failed to load budgets: ' + error.message)
   } finally {
     isLoadingBudgets.value = false
   }
@@ -374,13 +386,13 @@ async function handleSubmitBudget(data: { categoryId: string; amount: number }) 
       amount: data.amount
     })
 
-    toast.success(selectedBudget.value ? 'Budget berhasil diupdate' : 'Budget berhasil di-set')
+    toast.success(selectedBudget.value ? 'Budget updated successfully' : 'Budget set successfully')
     selectedBudget.value = undefined
 
     // Reload budgets
     await loadBudgets()
   } catch (error: any) {
-    toast.error('Gagal menyimpan budget: ' + error.message)
+    toast.error('Failed to save budget: ' + error.message)
   } finally {
     isSubmitting.value = false
   }
@@ -392,11 +404,11 @@ async function handleDeleteBudget() {
   isSubmitting.value = true
   try {
     await budgetRepository.delete(selectedBudget.value.id)
-    toast.success('Budget berhasil dihapus')
+    toast.success('Budget deleted successfully')
     selectedBudget.value = undefined
     await loadBudgets()
   } catch (error: any) {
-    toast.error('Gagal menghapus budget: ' + error.message)
+    toast.error('Failed to delete budget: ' + error.message)
   } finally {
     isSubmitting.value = false
   }
@@ -407,10 +419,10 @@ async function handleDeleteBudgetWithId(budgetId: string) {
 
   try {
     await budgetRepository.delete(budgetId)
-    toast.success('Budget berhasil dihapus')
+    toast.success('Budget deleted successfully')
     await loadBudgets()
   } catch (error: any) {
-    toast.error('Gagal menghapus budget: ' + error.message)
+    toast.error('Failed to delete budget: ' + error.message)
   }
 }
 

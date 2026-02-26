@@ -43,29 +43,29 @@ export function useConfirm() {
     })
   }
 
-  const danger = (title: string, message: string, confirmText = 'Hapus', cancelText = 'Batal') => {
+  const danger = (title: string, message: string, confirmText = 'Delete', cancelText = 'Cancel') => {
     return confirm({
       title,
       message,
       variant: 'danger',
       confirmText,
       cancelText,
-      loadingText: 'Menghapus...'
+      loadingText: 'Deleting...'
     })
   }
 
-  const warning = (title: string, message: string, confirmText = 'Ya', cancelText = 'Tidak') => {
+  const warning = (title: string, message: string, confirmText = 'Yes', cancelText = 'No') => {
     return confirm({
       title,
       message,
       variant: 'warning',
       confirmText,
       cancelText,
-      loadingText: 'Memproses...'
+      loadingText: 'Processing...'
     })
   }
 
-  const info = (title: string, message: string, confirmText = 'OK', cancelText = 'Batal') => {
+  const info = (title: string, message: string, confirmText = 'OK', cancelText = 'Cancel') => {
     return confirm({
       title,
       message,

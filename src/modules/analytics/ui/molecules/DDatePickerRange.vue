@@ -150,7 +150,7 @@
               <!-- Quick Select Buttons -->
               <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-                  Pilih Cepat
+                  Quick Select
                 </p>
                 <div class="grid grid-cols-4 gap-2">
                   <button
@@ -172,7 +172,7 @@
                   class="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
                   @click="closeModal"
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   type="button"
@@ -180,7 +180,7 @@
                   class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md"
                   @click="applyRange"
                 >
-                  Terapkan
+                  Apply
                 </button>
               </div>
             </div>
@@ -218,7 +218,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: 'Pilih periode tanggal',
+  placeholder: 'Select date period',
   disabled: false
 })
 
@@ -227,35 +227,36 @@ const emit = defineEmits<{
 }>()
 
 // Month names in Indonesian
+// Month names in English
 const monthNames = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-  'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ]
 
-const weekdayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
+const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 // Quick preset options
 const quickPresets: QuickPreset[] = [
   {
-    label: '7 Hari',
+    label: '7 Days',
     value: '7-days',
     from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     to: new Date(),
   },
   {
-    label: '30 Hari',
+    label: '30 Days',
     value: '30-days',
     from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     to: new Date(),
   },
   {
-    label: 'Bulan Ini',
+    label: 'This Month',
     value: 'mtd',
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     to: new Date(),
   },
   {
-    label: 'Bulan Lalu',
+    label: 'Last Month',
     value: 'last-month',
     from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
     to: new Date(new Date().getFullYear(), new Date().getMonth(), 0, 23, 59, 59),

@@ -1,20 +1,20 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
     <div class="w-full max-w-md">
       <!-- Logo & Title -->
       <div class="text-center mb-8 animate-fade-in">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-teal-600 rounded-2xl mb-4 shadow-lg">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-700 dark:bg-slate-800 rounded-2xl mb-4 shadow-lg">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
           </svg>
         </div>
-        <h1 class="text-3xl font-bold text-slate-800 mb-2">Dompetku</h1>
-        <p class="text-slate-500">Mulai perjalanan finansialmu</p>
+        <h1 class="text-3xl font-bold text-slate-800 dark:text-white mb-2">Dompetku</h1>
+        <p class="text-slate-500 dark:text-slate-400">Start your financial journey</p>
       </div>
 
       <!-- Register Card -->
-      <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-8 animate-slide-up">
-        <h2 class="text-xl font-semibold text-slate-800 mb-6">Buat Akun</h2>
+      <div class="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 p-8 animate-slide-up">
+        <h2 class="text-xl font-semibold text-slate-800 dark:text-white mb-6">Create Account</h2>
 
         <DRegisterForm
           ref="registerFormRef"
@@ -23,7 +23,7 @@
       </div>
 
       <!-- Footer -->
-      <p class="text-center text-xs text-slate-400 mt-8">
+      <p class="text-center text-xs text-slate-400 dark:text-slate-500 mt-8">
         © 2025 Dompetku by Ambar Dwi Saputra
       </p>
     </div>

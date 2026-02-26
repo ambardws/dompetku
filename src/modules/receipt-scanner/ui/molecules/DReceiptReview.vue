@@ -7,7 +7,7 @@
         </svg>
       </div>
       <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-        Struk Berhasil Dipindai
+        Receipt Successfully Scanned
       </h3>
     </div>
 
@@ -15,20 +15,20 @@
       <!-- Merchant Name -->
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Toko / Merchant
+          Store / Merchant
         </label>
         <input
           v-model="formData.merchant"
           type="text"
           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Contoh: Indomaret"
+          placeholder="Example: Indomaret"
         />
       </div>
 
       <!-- Total Amount -->
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Total Pengeluaran
+          Total Expense
         </label>
         <div class="relative">
           <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
@@ -46,7 +46,7 @@
       <!-- Date -->
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Tanggal
+          Date
         </label>
         <input
           v-model="formData.date"
@@ -58,20 +58,20 @@
       <!-- Category -->
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Kategori
+          Category
         </label>
         <select
           v-model="formData.category"
           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
-          <option value="groceries">Groceries (Belanja)</option>
-          <option value="food">Food & Beverage (Makan & Minum)</option>
-          <option value="transport">Transportasi</option>
+          <option value="groceries">Groceries</option>
+          <option value="food">Food & Beverage</option>
+          <option value="transport">Transportation</option>
           <option value="shopping">Shopping</option>
-          <option value="health">Kesehatan</option>
-          <option value="entertainment">Hiburan</option>
-          <option value="bills">Tagihan</option>
-          <option value="other">Lainnya</option>
+          <option value="health">Health</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="bills">Bills</option>
+          <option value="other">Other</option>
         </select>
       </div>
 

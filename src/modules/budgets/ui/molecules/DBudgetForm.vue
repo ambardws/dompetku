@@ -3,12 +3,12 @@
     <!-- Category Selection -->
     <div>
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Kategori
+        Category
       </label>
       <DCategorySelector
         v-model="form.categoryId"
         :categories="expenseCategories"
-        placeholder="Pilih kategori pengeluaran"
+        placeholder="Select expense category"
         class="w-full"
       />
       <p v-if="errors.categoryId" class="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
@@ -22,7 +22,7 @@
     <!-- Budget Amount -->
     <div>
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Jumlah Budget (Bulanan)
+        Budget Amount (Monthly)
       </label>
       <DInputAmount
         v-model="form.amount"
@@ -37,7 +37,7 @@
         {{ errors.amount }}
       </p>
       <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-        💡 Budget akan berlaku per bulan dan akan di-reset setiap awal bulan
+        💡 Budget will apply monthly and will reset at the beginning of each month
       </p>
     </div>
 
@@ -52,10 +52,10 @@
         </svg>
         <div class="text-sm">
           <p class="font-medium text-blue-800 dark:text-blue-200">
-            Budget untuk kategori ini sudah ada
+            Budget for this category already exists
           </p>
           <p class="text-blue-600 dark:text-blue-300 mt-0.5">
-            Budget akan diupdate dari <span class="font-semibold">{{ formatCurrency(existingBudget.amount) }}</span> menjadi <span class="font-semibold">{{ formatCurrency(form.amount) }}</span>
+            Budget will be updated from <span class="font-semibold">{{ formatCurrency(existingBudget.amount) }}</span> to <span class="font-semibold">{{ formatCurrency(form.amount) }}</span>
           </p>
         </div>
       </div>
@@ -162,13 +162,13 @@ function validate(): boolean {
   let isValid = true
 
   if (!form.categoryId) {
-    errors.categoryId = 'Kategori wajib dipilih'
+    errors.categoryId = 'Category must be selected'
     isValid = false
   }
 
   const amountNum = Number(form.amount)
   if (!amountNum || amountNum <= 0 || isNaN(amountNum)) {
-    errors.amount = 'Jumlah harus lebih dari 0'
+    errors.amount = 'Amount must be greater than 0'
     isValid = false
   }
 

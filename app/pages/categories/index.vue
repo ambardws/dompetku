@@ -3,13 +3,23 @@
     <div class="max-w-3xl mx-auto bg-white dark:bg-gray-900 min-h-screen shadow-xl px-4 py-6 sm:py-8 pb-24">
       <!-- Page Header -->
       <DPageHeader
-        title="Kategori"
-        subtitle="Kelola kategori transaksi Anda"
-        icon="🏷️"
+        title="Categories"
+        subtitle="Manage your transaction categories"
+        icon="tag"
         :user-email="user?.email"
-        :show-back-button="true"
+        :show-back-button="false"
         @back="handleBack"
       >
+        <template #actions-menu>
+          <DActionsMenu
+            :show-budget-link="true"
+            :show-export="false"
+            @manage-categories="() => {}"
+            @manage-budgets="router.push('/budgets')"
+            @link-bot="() => {}"
+            @logout="handleLogout"
+          />
+        </template>
         <template #notification>
           <DNotificationBell />
         </template>
@@ -110,6 +120,7 @@ import DCategoryForm from '~modules/categories/ui/organisms/DCategoryForm.vue'
 import DCategoryCard from '~modules/categories/ui/molecules/DCategoryCard.vue'
 import DCategorySkeleton from '~modules/categories/ui/molecules/DCategorySkeleton.vue'
 import DPageHeader from '~shared/ui/organisms/DPageHeader.vue'
+import DActionsMenu from '~shared/ui/molecules/DActionsMenu.vue'
 import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
 import DDarkModeToggle from '~shared/ui/atoms/DDarkModeToggle.vue'
 import { useAuth } from '~shared/composables/useAuth'
@@ -150,7 +161,7 @@ const categoryRepository = useCategoryRepository()
 const toast = useToast()
 const confirm = useConfirm()
 const { isDark, toggle: toggleDarkMode } = useDarkMode()
-const { handleBack } = useSharedHeader()
+const { handleBack, handleLogout } = useSharedHeader()
 
 const categories = ref<Category[]>([])
 const editingCategory = ref<Category | null>(null)
@@ -242,10 +253,10 @@ function cancelEdit() {
 
 async function confirmDelete(category: Category) {
   const confirmed = await confirm.danger(
-    'Hapus Kategori',
-    `Apakah Anda yakin ingin menghapus kategori "${category.name}"? Kategori yang sudah digunakan dalam transaksi tidak dapat dihapus.`,
-    'Ya, Hapus',
-    'Batal'
+    'Delete Category',
+    `Are you sure you want to delete the category "${category.name}"? Categories that have been used in transactions cannot be deleted.`,
+    'Yes, Delete',
+    'Cancel'
   )
 
   if (!confirmed) return

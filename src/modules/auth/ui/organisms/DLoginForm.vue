@@ -16,7 +16,7 @@
     <DPasswordInput
       v-model="form.password"
       label="Password"
-      placeholder="Masukkan password"
+      placeholder="Enter password"
       required
       :error="errors.password"
       :disabled="loading"
@@ -40,17 +40,17 @@
       :disabled="!isFormValid"
       class="w-full"
     >
-      {{ loading ? 'Memproses...' : 'Login' }}
+      {{ loading ? 'Processing...' : 'Login' }}
     </DButton>
 
     <!-- Register Link -->
-    <p class="text-center text-sm text-slate-600">
-      Belum punya akun?
+    <p class="text-center text-sm text-slate-600 dark:text-slate-400">
+      Don't have an account?
       <a
         href="/register"
-        class="text-teal-600 hover:text-teal-700 font-semibold transition-colors"
+        class="text-indigo-700 dark:text-slate-300 hover:text-indigo-800 dark:hover:text-white font-semibold transition-colors"
       >
-        Daftar sekarang
+        Register now
       </a>
     </p>
   </form>
@@ -95,13 +95,13 @@ function validateEmail() {
   errors.value.email = ''
 
   if (!form.value.email.trim()) {
-    errors.value.email = 'Email wajib diisi'
+    errors.value.email = 'Email is required'
     return false
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(form.value.email)) {
-    errors.value.email = 'Format email tidak valid'
+    errors.value.email = 'Invalid email format'
     return false
   }
 
@@ -112,7 +112,7 @@ function validatePassword() {
   errors.value.password = ''
 
   if (!form.value.password) {
-    errors.value.password = 'Password wajib diisi'
+    errors.value.password = 'Password is required'
     return false
   }
 

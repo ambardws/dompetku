@@ -162,9 +162,9 @@ export interface ConfirmDialogProps {
 const props = withDefaults(defineProps<ConfirmDialogProps>(), {
   modelValue: false,
   variant: 'info',
-  confirmText: 'Konfirmasi',
-  cancelText: 'Batal',
-  loadingText: 'Memproses...',
+  confirmText: 'Confirm',
+  cancelText: 'Cancel',
+  loadingText: 'Processing...',
   loading: false,
   closeOnBackdrop: true
 })

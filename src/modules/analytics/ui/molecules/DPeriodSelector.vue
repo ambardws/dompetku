@@ -2,7 +2,7 @@
   <div class="period-selector w-full">
     <DDatePickerRange
       v-model="periodValue"
-      placeholder="Pilih periode tanggal"
+      placeholder="Select date period"
       @update:model-value="handlePeriodChange"
     />
   </div>

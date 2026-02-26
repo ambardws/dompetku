@@ -37,7 +37,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
-  placeholder: 'Cari transaksi...',
+  placeholder: 'Search transactions...',
   debounce: 300
 })
 

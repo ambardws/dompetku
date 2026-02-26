@@ -25,10 +25,10 @@ export function useSharedHeaderProvider() {
 
   const handleLogout = async () => {
     const confirmed = await confirm.warning(
-      'Keluar dari Akun',
-      'Apakah Anda yakin ingin keluar dari akun? Anda perlu login kembali untuk mengakses aplikasi.',
-      'Ya, Keluar',
-      'Batal'
+      'Logout',
+      'Are you sure you want to logout? You will need to login again to access the application.',
+      'Yes, Logout',
+      'Cancel'
     )
 
     if (!confirmed) return

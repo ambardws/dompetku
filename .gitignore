@@ -32,3 +32,6 @@ coverage/
 # SonarQube
 .scannerwork/
 .sonar/
+
+# claude
+.claude

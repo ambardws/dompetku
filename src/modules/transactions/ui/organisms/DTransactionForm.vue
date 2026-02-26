@@ -23,18 +23,18 @@
 
       <DInputAmount
         v-model="formData.amount"
-        label="Jumlah"
+        label="Amount"
         required
         :error="errors.amount"
-        hint="Masukkan jumlah transaksi"
+        hint="Enter transaction amount"
         :quick-amounts="[10000, 25000, 50000, 100000]"
       />
 
       <DCategorySelector
         v-model="formData.categoryId"
         :categories="filteredCategories"
-        label="Kategori"
-        placeholder="Pilih kategori"
+        label="Category"
+        placeholder="Select category"
         required
         :loading="loadingCategories"
         :error="errors.category"
@@ -42,15 +42,15 @@
 
       <DDatePicker
         v-model="formData.transactionDate"
-        label="Tanggal Transaksi"
-        placeholder="Pilih tanggal transaksi"
-        hint="Kosongkan untuk menggunakan tanggal hari ini"
+        label="Transaction Date"
+        placeholder="Select transaction date"
+        hint="Leave empty to use today's date"
       />
 
       <DTextInput
         v-model="formData.note"
-        label="Catatan (Opsional)"
-        placeholder="Tambahkan catatan..."
+        label="Note (Optional)"
+        placeholder="Add a note..."
         :error="errors.note"
       />
     </div>
@@ -64,7 +64,7 @@
         class="flex-1"
       >
         <DIcon name="x" :size="18" class="mr-2" />
-        Batal
+        Cancel
       </DButton>
 
       <DButton
@@ -74,7 +74,7 @@
         class="shadow-lg hover:shadow-xl transition-all duration-200"
       >
         <DIcon name="check" :size="18" class="mr-2" />
-        {{ mode === 'create' ? 'Tambah Transaksi' : 'Simpan Perubahan' }}
+        {{ mode === 'create' ? 'Add Transaction' : 'Save Changes' }}
       </DButton>
     </div>
   </form>
@@ -124,8 +124,8 @@ const categories = ref<Category[]>([])
 const loadingCategories = ref(false)
 
 const transactionTypes = [
-  { value: 'income' as TransactionType, label: 'Pemasukan', icon: 'plus' as const },
-  { value: 'expense' as TransactionType, label: 'Pengeluaran', icon: 'minus' as const }
+  { value: 'income' as TransactionType, label: 'Income', icon: 'plus' as const },
+  { value: 'expense' as TransactionType, label: 'Expense', icon: 'minus' as const }
 ]
 
 const formData = reactive({
@@ -159,12 +159,12 @@ const validateForm = (): boolean => {
   let isValid = true
 
   if (formData.amount <= 0) {
-    errors.amount = 'Jumlah harus lebih dari 0'
+    errors.amount = 'Amount must be greater than 0'
     isValid = false
   }
 
   if (!formData.categoryId) {
-    errors.category = 'Kategori tidak boleh kosong'
+    errors.category = 'Category cannot be empty'
     isValid = false
   }
 

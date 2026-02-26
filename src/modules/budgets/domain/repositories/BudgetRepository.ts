@@ -5,7 +5,7 @@
 import type { Budget } from '../entities/Budget'
 
 export interface BudgetRepository {
-  add(budget: Budget): Promise<void>
+  add(budget: Budget): Promise<Budget>
   getByUserId(userId: string): Promise<Budget[]>
   getByCategoryId(userId: string, categoryId: string): Promise<Budget | null>
   getById(id: string): Promise<Budget | null>

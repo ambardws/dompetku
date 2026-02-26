@@ -3,15 +3,16 @@
     <div class="w-full max-w-3xl mx-auto bg-white dark:bg-gray-900 min-h-screen shadow-xl px-4 py-6 sm:py-8 pb-24">
       <!-- Page Header -->
       <DPageHeader
-        title="Riwayat Transaksi"
-        subtitle="Lihat dan kelola semua transaksi Anda"
-        icon="📋"
+        title="Transaction History"
+        subtitle="View and manage all your transactions"
+        icon="list"
         :user-email="user?.email"
       >
         <template #actions-menu>
           <DActionsMenu
             @export="(format) => handleExport(transactions, format)"
             @manage-categories="router.push('/categories')"
+            @manage-budgets="router.push('/budgets')"
             @link-bot="openBotLinkDialog"
             @logout="handleLogout"
           />
@@ -45,10 +46,10 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002 2V7a2 2 0 002-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 002" />
                 </svg>
               </div>
-              <h2 class="text-lg font-bold text-gray-900 dark:text-white">Semua Transaksi</h2>
+              <h2 class="text-lg font-bold text-gray-900 dark:text-white">All Transactions</h2>
             </div>
             <span class="text-sm text-gray-500 dark:text-gray-400">
-              {{ allTransactions.length }} transaksi
+              {{ allTransactions.length }} transaction{{ allTransactions.length !== 1 ? 's' : '' }}
             </span>
           </div>
 
@@ -85,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, provide } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTransactionRepository } from '~shared/composables/useTransactionRepository'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
@@ -157,13 +158,33 @@ const {
   botLinkError,
   botTokenTimeRemaining,
   handleExport,
+  setTransactions,
   openBotLinkDialog,
   handleGenerateLinkToken,
   handleCopyToken
 } = useHeaderActions()
 
+// Make available to layout
+provide('headerActions', {
+  showBotLinkDialog,
+  isGeneratingToken,
+  linkToken,
+  botLinkError,
+  botTokenTimeRemaining,
+  handleExport,
+  openBotLinkDialog,
+  handleGenerateLinkToken,
+  handleCopyToken
+})
+
 const transactions = ref<Transaction[]>([])
 const allTransactions = ref<Transaction[]>([])
+
+// Watch transactions and update global state for export
+watch(transactions, (newTransactions) => {
+  console.log('Transactions updated, calling setTransactions with:', newTransactions.length)
+  setTransactions(newTransactions)
+}, { deep: true })
 const currentPeriod = ref<PeriodValue>({
   from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   to: new Date(),
@@ -204,7 +225,7 @@ const loadCategories = async () => {
   try {
     categories.value = await categoryRepository.getByUserId(user.value.id)
   } catch (error) {
-    toast.error('Gagal memuat kategori')
+    toast.error('Failed to load categories')
   } finally {
     isLoadingCategories.value = false
   }
@@ -245,7 +266,7 @@ const loadTransactions = async (forceReload = false) => {
     // Mark data as loaded
     loadedPeriodKey.value = periodKey
   } catch (error) {
-    toast.error('Gagal memuat transaksi')
+    toast.error('Failed to load transactions')
   } finally {
     isLoading.value = false
   }
@@ -265,10 +286,10 @@ const handleEditTransaction = (transaction: Transaction) => {
 
 const handleDeleteTransaction = async (transaction: Transaction) => {
   const confirmed = await confirm.danger(
-    'Hapus Transaksi',
-    `Apakah Anda yakin ingin menghapus transaksi ${transaction.type === 'income' ? 'pemasukan' : 'pengeluaran'} sebesar Rp ${formatAmount(transaction.amount)}? Tindakan ini tidak dapat dibatalkan.`,
-    'Ya, Hapus',
-    'Batal'
+    'Delete Transaction',
+    `Are you sure you want to delete this ${transaction.type === 'income' ? 'income' : 'expense'} transaction of Rp ${formatAmount(transaction.amount)}? This action cannot be undone.`,
+    'Yes, Delete',
+    'Cancel'
   )
 
   if (!confirmed) return
@@ -276,9 +297,9 @@ const handleDeleteTransaction = async (transaction: Transaction) => {
   try {
     await transactionRepository.delete(transaction.id)
     await loadTransactions(true)
-    toast.success('Transaksi berhasil dihapus')
+    toast.success('Transaction deleted successfully')
   } catch (error) {
-    toast.error('Gagal menghapus transaksi')
+    toast.error('Failed to delete transaction')
   }
 }
 

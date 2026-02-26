@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <label v-if="label" :for="inputId" class="block text-sm font-medium text-slate-700 mb-2">
+    <label v-if="label" :for="inputId" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
@@ -19,7 +19,7 @@
       <button
         type="button"
         :disabled="disabled"
-        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors disabled:cursor-not-allowed p-1"
+        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 transition-colors disabled:cursor-not-allowed p-1"
         @click="toggleShowPassword"
       >
         <DIcon :name="showPassword ? 'eye-off' : 'eye'" :size="20" />
@@ -33,7 +33,7 @@
       {{ error }}
     </p>
 
-    <p v-else-if="hint" class="mt-2 text-sm text-slate-500">
+    <p v-else-if="hint" class="mt-2 text-sm text-slate-500 dark:text-slate-400">
       {{ hint }}
     </p>
   </div>
@@ -78,15 +78,15 @@ const internalValue = computed({
 })
 
 const inputClasses = computed(() => {
-  const base = 'w-full rounded-lg border px-4 py-2.5 pr-12 transition-all duration-200 focus:outline-none focus:ring-2 text-slate-900 placeholder-slate-400'
+  const base = 'w-full rounded-lg border px-4 py-2.5 pr-12 transition-all duration-200 focus:outline-none focus:ring-2 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500'
 
   const state = props.error
-    ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-    : 'border-slate-200 focus:border-teal-500 focus:ring-teal-500/20 hover:border-slate-300'
+    ? 'border-red-300 dark:border-red-800 focus:border-red-500 focus:ring-red-500/20 shadow-sm'
+    : 'border-slate-300 dark:border-slate-700 focus:border-indigo-500 dark:focus:border-slate-500 hover:border-slate-400 dark:hover:border-slate-600'
 
   const disabled = props.disabled
-    ? 'bg-slate-50 text-slate-400 cursor-not-allowed border-slate-200'
-    : 'bg-white'
+    ? 'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 cursor-not-allowed border-slate-200 dark:border-slate-800'
+    : 'bg-white dark:bg-slate-900'
 
   return `${base} ${state} ${disabled}`
 })
