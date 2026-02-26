@@ -1,96 +1,95 @@
 <template>
-  <div class="d-register-form">
-    <form @submit.prevent="handleSubmit" class="space-y-5">
-      <!-- Email Input -->
-      <DTextInput
-        v-model="form.email"
-        label="Email"
-        type="email"
-        placeholder="nama@example.com"
-        required
-        :error="errors.email"
-        :disabled="loading"
-        @blur="validateEmail"
-      />
+  <form @submit.prevent="handleSubmit" class="space-y-5">
+    <!-- Email Input -->
+    <DTextInput
+      v-model="form.email"
+      label="Email"
+      type="email"
+      placeholder="nama@email.com"
+      required
+      :error="errors.email"
+      :disabled="loading"
+      @blur="validateEmail"
+    />
 
-      <!-- Password Input -->
-      <DPasswordInput
-        v-model="form.password"
-        label="Password"
-        placeholder="Min. 8 karakter, huruf besar, kecil, dan angka"
-        hint="Password harus minimal 8 karakter dengan kombinasi huruf besar, kecil, dan angka"
-        required
-        :error="errors.password"
-        :disabled="loading"
-        @blur="validatePassword"
-      />
+    <!-- Password Input -->
+    <DPasswordInput
+      v-model="form.password"
+      label="Password"
+      placeholder="Minimal 8 karakter"
+      hint="Gunakan kombinasi huruf besar, kecil, dan angka"
+      required
+      :error="errors.password"
+      :disabled="loading"
+      @blur="validatePassword"
+    />
 
-      <!-- Confirm Password Input -->
-      <DPasswordInput
-        v-model="form.confirmPassword"
-        label="Konfirmasi Password"
-        placeholder="Masukkan ulang password"
-        required
-        :error="errors.confirmPassword"
-        :disabled="loading"
-        @blur="validateConfirmPassword"
-      />
-
-      <!-- Password Strength Indicator -->
-      <div v-if="form.password" class="space-y-2 animate-fade-in">
-        <div class="flex gap-1">
+    <!-- Password Strength Indicator -->
+    <div v-if="form.password" class="space-y-2 animate-fade-in">
+      <div class="flex items-center gap-2">
+        <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
           <div
-            v-for="i in 4"
-            :key="i"
-            class="h-1 flex-1 rounded-full transition-all"
-            :class="i <= passwordStrength ? strengthColor : 'bg-gray-200'"
+            class="h-full transition-all duration-300 ease-out"
+            :class="strengthBarColor"
+            :style="{ width: strengthPercentage + '%' }"
           />
         </div>
-        <p class="text-xs" :class="strengthTextColor">
+        <span class="text-xs font-medium" :class="strengthTextColor">
           {{ strengthText }}
-        </p>
+        </span>
       </div>
+    </div>
 
-      <!-- Error Message -->
-      <div
-        v-if="generalError"
-        class="p-3 rounded-xl bg-red-50 border border-red-200 animate-fade-in"
+    <!-- Confirm Password Input -->
+    <DPasswordInput
+      v-model="form.confirmPassword"
+      label="Konfirmasi Password"
+      placeholder="Masukkan ulang password"
+      required
+      :error="errors.confirmPassword"
+      :disabled="loading"
+      @blur="validateConfirmPassword"
+    />
+
+    <!-- Error Message -->
+    <div
+      v-if="generalError"
+      class="p-3 rounded-lg bg-red-50 border border-red-200 animate-fade-in"
+    >
+      <p class="text-sm text-red-600">{{ generalError }}</p>
+    </div>
+
+    <!-- Success Message -->
+    <div
+      v-if="generalSuccess"
+      class="p-3 rounded-lg bg-emerald-50 border border-emerald-200 animate-fade-in"
+    >
+      <p class="text-sm text-emerald-600">{{ generalSuccess }}</p>
+    </div>
+
+    <!-- Submit Button -->
+    <DButton
+      type="submit"
+      variant="primary"
+      size="lg"
+      :loading="loading"
+      :disabled="!isFormValid"
+      class="w-full"
+    >
+      {{ loading ? 'Memproses...' : 'Buat Akun' }}
+    </DButton>
+
+    <!-- Login Link -->
+    <p class="text-center text-sm text-slate-600">
+      Sudah punya akun?
+      <a
+        href="/login"
+        class="text-teal-600 hover:text-teal-700 font-semibold transition-colors"
       >
-        <p class="text-sm text-red-600">{{ generalError }}</p>
-      </div>
-
-      <!-- Success Message -->
-      <div
-        v-if="generalSuccess"
-        class="p-3 rounded-xl bg-green-50 border border-green-200 animate-fade-in"
-      >
-        <p class="text-sm text-green-600">{{ generalSuccess }}</p>
-      </div>
-
-      <!-- Submit Button -->
-      <DButton
-        type="submit"
-        variant="primary"
-        size="lg"
-        :loading="loading"
-        :disabled="!isFormValid"
-        class="w-full"
-      >
-        {{ loading ? 'Mendaftar...' : 'Daftar' }}
-      </DButton>
-
-      <!-- Login Link -->
-      <p class="text-center text-sm text-gray-600">
-        Sudah punya akun?
-        <a
-          href="/login"
-          class="text-primary-600 hover:text-primary-700 font-medium transition-colors"
-        >
-          Login di sini
-        </a>
-      </p>
-    </form>
-  </div>
+        Login di sini
+      </a>
+    </p>
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -148,38 +147,42 @@ const passwordStrength = computed(() => {
   return strength
 })
 
-const strengthColor = computed(() => {
+const strengthPercentage = computed(() => {
+  return (passwordStrength.value / 4) * 100
+})
+
+const strengthBarColor = computed(() => {
   if (passwordStrength.value <= 1) return 'bg-red-500'
   if (passwordStrength.value === 2) return 'bg-orange-500'
   if (passwordStrength.value === 3) return 'bg-yellow-500'
-  return 'bg-green-500'
+  return 'bg-emerald-500'
 })
 
 const strengthTextColor = computed(() => {
   if (passwordStrength.value <= 1) return 'text-red-600'
   if (passwordStrength.value === 2) return 'text-orange-600'
   if (passwordStrength.value === 3) return 'text-yellow-600'
-  return 'text-green-600'
+  return 'text-emerald-600'
 })
 
 const strengthText = computed(() => {
-  if (passwordStrength.value <= 1) return 'Password lemah'
-  if (passwordStrength.value === 2) return 'Password cukup'
-  if (passwordStrength.value === 3) return 'Password kuat'
-  return 'Password sangat kuat'
+  if (passwordStrength.value <= 1) return 'Lemah'
+  if (passwordStrength.value === 2) return 'Sedang'
+  if (passwordStrength.value === 3) return 'Kuat'
+  return 'Sangat Kuat'
 })
 
 function validateEmail() {
   errors.value.email = ''
 
   if (!form.value.email.trim()) {
-    errors.value.email = 'Email is required'
+    errors.value.email = 'Email wajib diisi'
     return false
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(form.value.email)) {
-    errors.value.email = 'Invalid email format'
+    errors.value.email = 'Format email tidak valid'
     return false
   }
 
@@ -190,27 +193,27 @@ function validatePassword() {
   errors.value.password = ''
 
   if (!form.value.password) {
-    errors.value.password = 'Password is required'
+    errors.value.password = 'Password wajib diisi'
     return false
   }
 
   if (form.value.password.length < 8) {
-    errors.value.password = 'Password must be at least 8 characters'
+    errors.value.password = 'Password minimal 8 karakter'
     return false
   }
 
   if (!/[A-Z]/.test(form.value.password)) {
-    errors.value.password = 'Password must contain at least one uppercase letter'
+    errors.value.password = 'Password harus mengandung huruf besar'
     return false
   }
 
   if (!/[a-z]/.test(form.value.password)) {
-    errors.value.password = 'Password must contain at least one lowercase letter'
+    errors.value.password = 'Password harus mengandung huruf kecil'
     return false
   }
 
   if (!/[0-9]/.test(form.value.password)) {
-    errors.value.password = 'Password must contain at least one number'
+    errors.value.password = 'Password harus mengandung angka'
     return false
   }
 
@@ -221,12 +224,12 @@ function validateConfirmPassword() {
   errors.value.confirmPassword = ''
 
   if (!form.value.confirmPassword) {
-    errors.value.confirmPassword = 'Please confirm your password'
+    errors.value.confirmPassword = 'Konfirmasi password wajib diisi'
     return false
   }
 
   if (form.value.password !== form.value.confirmPassword) {
-    errors.value.confirmPassword = 'Passwords do not match'
+    errors.value.confirmPassword = 'Password tidak cocok'
     return false
   }
 
@@ -274,9 +277,3 @@ defineExpose({
   },
 })
 </script>
-
-<style scoped>
-.d-register-form {
-  @apply w-full;
-}
-</style>

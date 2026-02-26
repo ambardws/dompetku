@@ -1,61 +1,59 @@
 <template>
-  <div class="d-login-form">
-    <form @submit.prevent="handleSubmit" class="space-y-5">
-      <!-- Email Input -->
-      <DTextInput
-        v-model="form.email"
-        label="Email"
-        type="email"
-        placeholder="nama@example.com"
-        required
-        :error="errors.email"
-        :disabled="loading"
-        @blur="validateEmail"
-      />
+  <form @submit.prevent="handleSubmit" class="space-y-5">
+    <!-- Email Input -->
+    <DTextInput
+      v-model="form.email"
+      label="Email"
+      type="email"
+      placeholder="nama@email.com"
+      required
+      :error="errors.email"
+      :disabled="loading"
+      @blur="validateEmail"
+    />
 
-      <!-- Password Input -->
-      <DPasswordInput
-        v-model="form.password"
-        label="Password"
-        placeholder="Masukkan password"
-        required
-        :error="errors.password"
-        :disabled="loading"
-        @blur="validatePassword"
-      />
+    <!-- Password Input -->
+    <DPasswordInput
+      v-model="form.password"
+      label="Password"
+      placeholder="Masukkan password"
+      required
+      :error="errors.password"
+      :disabled="loading"
+      @blur="validatePassword"
+    />
 
-      <!-- Error Message -->
-      <div
-        v-if="generalError"
-        class="p-3 rounded-xl bg-red-50 border border-red-200 animate-fade-in"
+    <!-- Error Message -->
+    <div
+      v-if="generalError"
+      class="p-3 rounded-lg bg-red-50 border border-red-200 animate-fade-in"
+    >
+      <p class="text-sm text-red-600">{{ generalError }}</p>
+    </div>
+
+    <!-- Submit Button -->
+    <DButton
+      type="submit"
+      variant="primary"
+      size="lg"
+      :loading="loading"
+      :disabled="!isFormValid"
+      class="w-full"
+    >
+      {{ loading ? 'Memproses...' : 'Login' }}
+    </DButton>
+
+    <!-- Register Link -->
+    <p class="text-center text-sm text-slate-600">
+      Belum punya akun?
+      <a
+        href="/register"
+        class="text-teal-600 hover:text-teal-700 font-semibold transition-colors"
       >
-        <p class="text-sm text-red-600">{{ generalError }}</p>
-      </div>
-
-      <!-- Submit Button -->
-      <DButton
-        type="submit"
-        variant="primary"
-        size="lg"
-        :loading="loading"
-        :disabled="!isFormValid"
-        class="w-full"
-      >
-        {{ loading ? 'Logging in...' : 'Login' }}
-      </DButton>
-
-      <!-- Register Link -->
-      <p class="text-center text-sm text-gray-600">
-        Belum punya akun?
-        <a
-          href="/register"
-          class="text-primary-600 hover:text-primary-700 font-medium transition-colors"
-        >
-          Daftar sekarang
-        </a>
-      </p>
-    </form>
-  </div>
+        Daftar sekarang
+      </a>
+    </p>
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -97,13 +95,13 @@ function validateEmail() {
   errors.value.email = ''
 
   if (!form.value.email.trim()) {
-    errors.value.email = 'Email is required'
+    errors.value.email = 'Email wajib diisi'
     return false
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(form.value.email)) {
-    errors.value.email = 'Invalid email format'
+    errors.value.email = 'Format email tidak valid'
     return false
   }
 
@@ -114,7 +112,7 @@ function validatePassword() {
   errors.value.password = ''
 
   if (!form.value.password) {
-    errors.value.password = 'Password is required'
+    errors.value.password = 'Password wajib diisi'
     return false
   }
 
@@ -151,9 +149,3 @@ defineExpose({
   },
 })
 </script>
-
-<style scoped>
-.d-login-form {
-  @apply w-full;
-}
-</style>
