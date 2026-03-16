@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 transition-colors">
-    <div class="w-full max-w-3xl mx-auto bg-white dark:bg-slate-900 min-h-screen shadow-lg px-4 py-6 sm:py-8 pb-24">
+  <div class="pb-20 transition-colors">
+    <div class="bg-white dark:bg-slate-900 min-h-screen px-4 py-6 sm:py-8 pb-24">
       <!-- Header -->
       <DPageHeader
         :title="pageMeta.title || 'Dompetku'"

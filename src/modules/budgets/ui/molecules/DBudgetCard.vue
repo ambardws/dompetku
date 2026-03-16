@@ -54,10 +54,10 @@
       <!-- Amount Text -->
       <div class="flex items-center justify-between text-xs mt-2">
         <span class="font-medium" :class="statusTextClass">
-          {{ formatCurrency(budgetStatus.spent) }}
+          {{ formatCurrency(budgetStatus.spent) }} spent
         </span>
-        <span class="text-gray-500 dark:text-gray-400">
-          of {{ formatCurrency(budget.amount) }}
+        <span class="font-medium" :class="budgetStatus.remaining >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+          {{ budgetStatus.remaining >= 0 ? formatCurrency(budgetStatus.remaining) + ' left' : formatCurrency(Math.abs(budgetStatus.remaining)) + ' over' }}
         </span>
       </div>
     </div>

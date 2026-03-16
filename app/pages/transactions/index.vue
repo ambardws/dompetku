@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 dark:bg-gray-950 pb-20 transition-colors">
-    <div class="w-full max-w-3xl mx-auto bg-white dark:bg-gray-900 min-h-screen shadow-xl px-4 py-6 sm:py-8 pb-24">
+    <div class="w-full bg-white dark:bg-gray-900 min-h-screen px-4 py-6 sm:py-8 pb-24">
       <!-- Page Header -->
       <DPageHeader
         title="Transaction History"

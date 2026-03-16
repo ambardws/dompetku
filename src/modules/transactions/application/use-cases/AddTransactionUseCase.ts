@@ -19,6 +19,7 @@ export class AddTransactionUseCase {
       type: input.type,
       amount: input.amount,
       category: input.category,
+      categoryId: input.categoryId,
       note: input.note,
       transactionDate: input.transactionDate || new Date(),
       createdAt: new Date()

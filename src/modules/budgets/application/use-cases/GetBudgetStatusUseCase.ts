@@ -4,12 +4,14 @@
  */
 import type { BudgetRepository } from '../../domain/repositories/BudgetRepository'
 import type { TransactionRepository } from '~modules/transactions/domain/repositories/TransactionRepository'
+import type { CategoryRepository } from '~modules/categories/domain/repositories/CategoryRepository'
 import type { GetBudgetStatusInput, BudgetStatus } from '../../domain/entities/Budget'
 
 export class GetBudgetStatusUseCase {
   constructor(
     private budgetRepository: BudgetRepository,
-    private transactionRepository: TransactionRepository
+    private transactionRepository: TransactionRepository,
+    private categoryRepository: CategoryRepository
   ) {}
 
   async execute(input: GetBudgetStatusInput): Promise<BudgetStatus> {
@@ -22,10 +24,17 @@ export class GetBudgetStatusUseCase {
       throw new Error('No budget found for this category')
     }
 
-    // Get all expense transactions for this category in the period
+    // Get category to find the name
+    const category = await this.categoryRepository.getById(input.categoryId)
+    if (!category) {
+      throw new Error('Category not found')
+    }
+
+    // Get all expense transactions for this category NAME in the period
+    // (since category_id in transactions is null, we match by category name)
     const transactions = await this.transactionRepository.search({
       userId: input.userId,
-      categoryId: input.categoryId,
+      query: category.name, // Search by category name
       type: 'expense',
       dateFrom: input.startDate,
       dateTo: input.endDate
@@ -36,7 +45,7 @@ export class GetBudgetStatusUseCase {
 
     // Calculate remaining and percentage
     const remaining = budget.amount - spent
-    const percentage = Math.round((spent / budget.amount) * 100)
+    const percentage = budget.amount > 0 ? Math.round((spent / budget.amount) * 100) : 0
 
     // Determine status
     let status: 'safe' | 'warning' | 'exceeded'

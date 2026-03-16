@@ -225,6 +225,7 @@ import { useSharedHeader } from '~shared/composables/useSharedHeader'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
 import { useBudgetRepository } from '~shared/composables/useBudgetRepository'
 import { useTransactionRepository } from '~shared/composables/useTransactionRepository'
+import { useTransactionRealtime } from '~shared/composables/useTransactionRealtime'
 import { SetBudgetUseCase } from '~modules/budgets/application/use-cases/SetBudgetUseCase'
 import { GetBudgetStatusUseCase } from '~modules/budgets/application/use-cases/GetBudgetStatusUseCase'
 import type { Budget } from '~modules/budgets/domain/entities/Budget'
@@ -278,10 +279,11 @@ const { handleLogout } = useSharedHeader()
 const categoryRepository = useCategoryRepository()
 const budgetRepository = useBudgetRepository()
 const transactionRepository = useTransactionRepository()
+const { subscribe: subscribeToTransactions } = useTransactionRealtime()
 
 // Use cases
 const setBudgetUseCase = new SetBudgetUseCase(budgetRepository)
-const getBudgetStatusUseCase = new GetBudgetStatusUseCase(budgetRepository, transactionRepository)
+const getBudgetStatusUseCase = new GetBudgetStatusUseCase(budgetRepository, transactionRepository, categoryRepository)
 
 // State
 const categories = ref<Category[]>([])
@@ -341,7 +343,7 @@ async function loadBudgets() {
     // Calculate date range for current month
     const now = new Date()
     const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999) // End of last day
 
     // Get budget status for each budget
     const items = await Promise.all(
@@ -461,5 +463,23 @@ watch(currentPeriod, () => {
 onMounted(async () => {
   await loadCategories()
   await loadBudgets()
+
+  // Setup realtime subscription for transactions
+  if (user.value?.id) {
+    subscribeToTransactions(user.value.id, {
+      onInsert: async () => {
+        // Reload budgets when new transaction is added
+        await loadBudgets()
+      },
+      onUpdate: async () => {
+        // Reload budgets when transaction is updated
+        await loadBudgets()
+      },
+      onDelete: async () => {
+        // Reload budgets when transaction is deleted
+        await loadBudgets()
+      }
+    })
+  }
 })
 </script>

@@ -102,31 +102,7 @@ import { useHeaderActions } from '~shared/composables/useHeaderActions'
 
 // Define layout and page meta
 definePageMeta({
-  layout: 'default',
-  middleware: [
-    async function (to, from) {
-      // Only run on client-side to avoid SSR issues
-      if (process.server) {
-        return
-      }
-
-      try {
-        const { user, init } = useAuth()
-
-        // Initialize auth session if not already loaded
-        if (!user.value) {
-          await init()
-        }
-
-        // Check if user is authenticated
-        if (!user.value) {
-          return navigateTo('/login')
-        }
-      } catch (error) {
-        return navigateTo('/login')
-      }
-    }
-  ]
+  layout: 'default'
 })
 
 // Page meta for layout
