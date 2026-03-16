@@ -1,18 +1,18 @@
 <template>
   <form class="space-y-6" @submit.prevent="handleSubmit">
     <div class="space-y-5">
-      <div class="grid grid-cols-2 gap-1 p-0.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
+      <div class="grid grid-cols-2 gap-1 p-0.5 bg-slate-100 dark:bg-slate-700 rounded-xl w-full">
         <button
           v-for="type in transactionTypes"
           :key="type.value"
           type="button"
           :class="[
-            'relative py-2 px-3 rounded-md text-sm font-medium transition-all duration-200',
+            'relative py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-200 w-full',
             formData.type === type.value
               ? type.value === 'income'
-                ? 'bg-white dark:bg-gray-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                : 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 shadow-sm'
-              : 'bg-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                : 'bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 shadow-sm'
+              : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
           ]"
           @click="formData.type = type.value"
         >

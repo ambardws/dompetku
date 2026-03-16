@@ -2,15 +2,15 @@
   <div class="space-y-4 px-6 py-4">
     <!-- Filter Pills -->
     <div class="flex items-center gap-2 mb-4">
-      <div class="flex gap-2 p-1 bg-gray-100 dark:bg-gray-700 rounded-xl">
+      <div class="flex gap-1 p-1 bg-slate-100 dark:bg-slate-700 rounded-xl w-full">
         <button
           v-for="filter in filters"
           :key="filter.value"
           :class="[
-            'px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200',
+            'flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200',
             selectedFilter === filter.value
-              ? 'bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow-sm'
-              : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
+              : 'bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
           ]"
           @click="selectedFilter = filter.value"
         >
