@@ -10,45 +10,107 @@ jobs:
   test-and-analyze:
     name: Tests, Coverage & SonarCloud
     runs-on: ubuntu-latest
-    
+
+    # Expose failure logs sebagai output untuk dikirim ke incident agent
+    outputs:
+      failure_logs: ${{ steps.capture_logs.outputs.logs }}
+      failure_phase: ${{ steps.capture_logs.outputs.phase }}
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for better analysis
-      
+
       - name: Setup Node.js
-        uses: actions/setup-node@v3
-        
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
+        id: install
         run: npm ci
-      
+
+      # ── Set phase tracker jika install gagal ──────────────────
+      - name: Capture install failure
+        if: failure() && steps.install.outcome == 'failure'
+        id: capture_install_fail
+        run: |
+          echo "phase=test" >> $GITHUB_OUTPUT
+          echo "logs=npm ci failed - dependency install error" >> $GITHUB_OUTPUT
+
       - name: Run tests with coverage
-        run: npm run test:coverage
-      
+        id: run_tests
+        # Capture output lengkap ke file untuk dikirim ke incident agent
+        run: |
+          npm run test:coverage 2>&1 | tee /tmp/test_output.txt
+          exit ${PIPESTATUS[0]}
+
+      # ── Capture test failure logs ─────────────────────────────
+      - name: Capture test failure logs
+        id: capture_logs
+        if: always()
+        run: |
+          if [ "${{ steps.run_tests.outcome }}" = "failure" ]; then
+            echo "phase=test" >> $GITHUB_OUTPUT
+            # Ambil 50 baris terakhir yang paling relevan, strip ANSI colors
+            LOGS=$(tail -n 50 /tmp/test_output.txt | sed 's/\x1b\[[0-9;]*m//g' | head -c 2500)
+            # Encode newline untuk GitHub Output
+            LOGS="${LOGS//'%'/'%25'}"
+            LOGS="${LOGS//$'\n'/'%0A'}"
+            LOGS="${LOGS//$'\r'/'%0D'}"
+            echo "logs=$LOGS" >> $GITHUB_OUTPUT
+          elif [ "${{ steps.install.outcome }}" = "failure" ]; then
+            echo "phase=test" >> $GITHUB_OUTPUT
+            echo "logs=Dependency installation failed" >> $GITHUB_OUTPUT
+          else
+            echo "phase=success" >> $GITHUB_OUTPUT
+            echo "logs=" >> $GITHUB_OUTPUT
+          fi
+
       - name: SonarCloud Scan
+        id: sonar
+        if: steps.run_tests.outcome == 'success'
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Provided by GitHub
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}     # Add this to GitHub Secrets
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.verbose=true
-      
+            -Dsonar.verbose=false
+
+      # ── Capture sonar failure ─────────────────────────────────
+      - name: Capture sonar failure
+        if: failure() && steps.sonar.outcome == 'failure'
+        run: |
+          echo "phase=sonar" >> $GITHUB_OUTPUT
+          echo "logs=SonarCloud Quality Gate failed. Check dashboard." >> $GITHUB_OUTPUT
+
       - name: Upload coverage to artifacts
-        uses: actions/upload-artifact@v3
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/
           retention-days: 30
-      
+
       - name: Comment PR with coverage
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.run_tests.outcome == 'success'
         uses: romeovs/lcov-reporter-action@v0.3.1
         with:
           lcov-file: ./coverage/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── Incident Response: dipanggil HANYA jika ada failure ──────
+  incident-response:
+    name: 🤖 Incident Response
+    needs: test-and-analyze
+    # Trigger hanya saat job sebelumnya gagal
+    if: failure()
+    uses: ./.github/workflows/incident-response.yml
+    with:
+      failure_phase: ${{ needs.test-and-analyze.outputs.failure_phase || 'unknown' }}
+      failure_logs:  ${{ needs.test-and-analyze.outputs.failure_logs || '' }}
+      job_name:      'Tests, Coverage & SonarCloud'
+    secrets: inherit  # Wariskan semua secrets termasuk TELEGRAM_DEV_BOT_TOKEN
