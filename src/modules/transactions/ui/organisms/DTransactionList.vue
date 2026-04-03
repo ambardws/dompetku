@@ -19,13 +19,24 @@
       </div>
     </div>
 
-    <!-- Search Input -->
-    <div class="mb-4">
-      <DSearchInput
-        v-model="searchQuery"
-        placeholder="Search by category or note..."
-        @search="handleSearch"
-      />
+    <!-- Search and Sort -->
+    <div class="flex gap-2 mb-4">
+      <div class="flex-1">
+        <DSearchInput
+          v-model="searchQuery"
+          placeholder="Search by category or note..."
+          @search="handleSearch"
+        />
+      </div>
+      <select
+        v-model="sortOrder"
+        class="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 cursor-pointer"
+      >
+        <option value="date-desc">Newest</option>
+        <option value="date-asc">Oldest</option>
+        <option value="amount-asc">Lowest Amount</option>
+        <option value="amount-desc">Highest Amount</option>
+      </select>
     </div>
 
     <div v-if="loading" class="space-y-3">
@@ -154,6 +165,7 @@ const filters = [
 
 const selectedFilter = ref<FilterType>('all')
 const searchQuery = ref('')
+const sortOrder = ref<'date-desc' | 'date-asc' | 'amount-asc' | 'amount-desc'>('date-desc')
 const currentPage = ref(1)
 const itemsPerPage = 5
 const windowWidth = ref(0)
@@ -189,6 +201,21 @@ const filteredTransactions = computed(() => {
       return categoryMatch || noteMatch
     })
   }
+
+  // Sort by amount or date
+  results = [...results].sort((a, b) => {
+    switch (sortOrder.value) {
+      case 'amount-asc':
+        return a.amount - b.amount
+      case 'amount-desc':
+        return b.amount - a.amount
+      case 'date-asc':
+        return new Date(a.transactionDate).getTime() - new Date(b.transactionDate).getTime()
+      case 'date-desc':
+      default:
+        return new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime()
+    }
+  })
 
   return results
 })
@@ -229,8 +256,8 @@ const visiblePages = computed(() => {
   return pages
 })
 
-// Reset to page 1 when filter or search changes
-watch([selectedFilter, searchQuery], () => {
+// Reset to page 1 when filter, search, or sort changes
+watch([selectedFilter, searchQuery, sortOrder], () => {
   currentPage.value = 1
 })
 
