@@ -6,8 +6,7 @@ export class SupabaseRecurringTransactionRepository implements RecurringTransact
   constructor(private supabase: SupabaseClient) {}
 
   async add(transaction: RecurringTransaction): Promise<void> {
-    const { error } = await this.supabase.from('recurring_transactions').insert({
-      id: transaction.id,
+    const insertData: Record<string, any> = {
       user_id: transaction.userId,
       type: transaction.type,
       amount: transaction.amount,
@@ -20,7 +19,14 @@ export class SupabaseRecurringTransactionRepository implements RecurringTransact
       is_active: transaction.isActive,
       created_at: transaction.createdAt.toISOString(),
       updated_at: transaction.updatedAt.toISOString()
-    })
+    }
+
+    // Only include id if it's a valid UUID (not empty string)
+    if (transaction.id && transaction.id.trim() !== '') {
+      insertData.id = transaction.id
+    }
+
+    const { error } = await this.supabase.from('recurring_transactions').insert(insertData)
     if (error) throw new Error(`Failed to add recurring transaction: ${error.message}`)
   }
 

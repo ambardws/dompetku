@@ -9,8 +9,7 @@ export class SupabaseBillReminderRepository implements BillReminderRepository {
   constructor(private supabase: SupabaseClient) {}
 
   async add(reminder: BillReminder): Promise<void> {
-    const { error } = await this.supabase.from('bill_reminders').insert({
-      id: reminder.id,
+    const insertData: Record<string, any> = {
       user_id: reminder.userId,
       title: reminder.title,
       amount: reminder.amount,
@@ -22,7 +21,14 @@ export class SupabaseBillReminderRepository implements BillReminderRepository {
       notes: reminder.notes,
       created_at: reminder.createdAt.toISOString(),
       updated_at: reminder.updatedAt.toISOString()
-    })
+    }
+
+    // Only include id if it's a valid UUID (not empty string)
+    if (reminder.id && reminder.id.trim() !== '') {
+      insertData.id = reminder.id
+    }
+
+    const { error } = await this.supabase.from('bill_reminders').insert(insertData)
 
     if (error) {
       throw new Error(`Failed to add bill reminder: ${error.message}`)
