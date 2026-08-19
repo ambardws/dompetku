@@ -59,7 +59,7 @@ import { useTransactionRepository } from '~shared/composables/useTransactionRepo
 import { GetFinancialInsightsUseCase } from '~modules/insights/application/use-cases/GetFinancialInsightsUseCase'
 import { useDarkMode } from '~shared/composables/useDarkMode'
 import { useSharedHeader } from '~shared/composables/useSharedHeader'
-import DInsightList from '~/modules/insights/ui/organisms/DInsightList.vue'
+import DInsightList from '~modules/insights/ui/organisms/DInsightList.vue'
 import DPageHeader from '~shared/ui/organisms/DPageHeader.vue'
 import DActionsMenu from '~shared/ui/molecules/DActionsMenu.vue'
 import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
