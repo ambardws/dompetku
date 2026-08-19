@@ -58,11 +58,7 @@
     <!-- Start Date -->
     <div>
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Start Date</label>
-      <input
-        v-model="form.startDate"
-        type="date"
-        class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-gray-900 dark:text-white"
-      />
+      <DDatePicker v-model="form.startDate" />
     </div>
 
     <!-- Note -->
@@ -88,6 +84,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import type { RecurringTransaction, RecurringFrequency } from '~modules/recurring/domain/entities/RecurringTransaction'
 import DInputAmount from '~modules/transactions/ui/molecules/DInputAmount.vue'
 import DButton from '~modules/transactions/ui/atoms/DButton.vue'
+import DDatePicker from '~modules/transactions/ui/molecules/DDatePicker.vue'
 import DCategorySelector from '~modules/categories/ui/molecules/DCategorySelector.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'

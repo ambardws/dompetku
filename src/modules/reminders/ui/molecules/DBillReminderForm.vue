@@ -16,7 +16,7 @@
     <!-- Due Date -->
     <div>
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Next Due Date</label>
-      <input v-model="form.nextDueDate" type="date" required class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-gray-900 dark:text-white" />
+      <DDatePicker v-model="form.nextDueDate" required />
     </div>
 
     <!-- Frequency -->
@@ -55,6 +55,7 @@ import { reactive } from 'vue'
 import type { BillReminder, ReminderFrequency } from '~modules/reminders/domain/entities/BillReminder'
 import DInputAmount from '~modules/transactions/ui/molecules/DInputAmount.vue'
 import DButton from '~modules/transactions/ui/atoms/DButton.vue'
+import DDatePicker from '~modules/transactions/ui/molecules/DDatePicker.vue'
 
 interface Props { reminder?: BillReminder; loading?: boolean }
 const props = withDefaults(defineProps<Props>(), { loading: false })
