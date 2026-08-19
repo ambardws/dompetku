@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Insight } from '~/modules/insights/domain/entities/FinancialInsight'
+import type { Insight } from '~modules/insights/domain/entities/FinancialInsight'
 
 interface Props { insight: Insight }
 const props = defineProps<Props>()

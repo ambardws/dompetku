@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import type { RecurringTransaction } from '~/modules/recurring/domain/entities/RecurringTransaction'
+import type { RecurringTransaction } from '~modules/recurring/domain/entities/RecurringTransaction'
 
 interface Props {
   transaction: RecurringTransaction

@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-import type { BillReminder, ReminderFrequency } from '~/modules/reminders/domain/entities/BillReminder'
+import type { BillReminder, ReminderFrequency } from '~modules/reminders/domain/entities/BillReminder'
 import DInputAmount from '~modules/transactions/ui/molecules/DInputAmount.vue'
 import DButton from '~modules/transactions/ui/atoms/DButton.vue'
 

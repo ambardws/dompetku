@@ -85,14 +85,14 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
-import type { RecurringTransaction, RecurringFrequency } from '~/modules/recurring/domain/entities/RecurringTransaction'
+import type { RecurringTransaction, RecurringFrequency } from '~modules/recurring/domain/entities/RecurringTransaction'
 import DInputAmount from '~modules/transactions/ui/molecules/DInputAmount.vue'
 import DButton from '~modules/transactions/ui/atoms/DButton.vue'
 import DCategorySelector from '~modules/categories/ui/molecules/DCategorySelector.vue'
 import { useAuth } from '~shared/composables/useAuth'
 import { useCategoryRepository } from '~shared/composables/useCategoryRepository'
 import { GetCategoriesUseCase } from '~modules/categories/application/use-cases/GetCategoriesUseCase'
-import type { Category } from '~/modules/categories/domain/entities/Category'
+import type { Category } from '~modules/categories/domain/entities/Category'
 
 interface Props {
   recurring?: RecurringTransaction

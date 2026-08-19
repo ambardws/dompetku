@@ -1,5 +1,5 @@
 import { useSupabaseClient } from '#imports'
-import { SupabaseRecurringTransactionRepository } from '~/modules/recurring/infrastructure/SupabaseRecurringTransactionRepository'
+import { SupabaseRecurringTransactionRepository } from '~modules/recurring/infrastructure/SupabaseRecurringTransactionRepository'
 
 export function useRecurringTransactionRepository() {
   const supabase = useSupabaseClient()

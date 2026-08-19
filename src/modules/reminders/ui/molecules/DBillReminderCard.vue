@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BillReminder } from '~/modules/reminders/domain/entities/BillReminder'
+import type { BillReminder } from '~modules/reminders/domain/entities/BillReminder'
 
 interface Props { reminder: BillReminder }
 const props = defineProps<Props>()

@@ -1,57 +1,115 @@
 <template>
-  <NuxtLayout>
-    <div class="mb-5 flex items-center justify-between">
-      <h1 class="text-xl font-bold text-slate-800 dark:text-white">Bill Reminders</h1>
-      <button @click="showForm = true" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium transition-colors">
-        + Add Reminder
-      </button>
-    </div>
+  <div class="bg-gray-100 dark:bg-gray-950 pb-16 transition-colors">
+    <div class="max-w-3xl mx-auto bg-white dark:bg-gray-900 min-h-screen shadow-xl px-4 py-6 sm:py-8 pb-24">
+      <!-- Page Header -->
+      <DPageHeader
+        title="Bill Reminders"
+        subtitle="Never miss a payment"
+        icon="bell"
+        :show-back-button="true"
+        :user-email="user?.email"
+        @back="handleBack"
+      >
+        <template #actions-menu>
+          <DActionsMenu
+            :show-export="false"
+            @manage-categories="router.push('/categories')"
+            @manage-budgets="router.push('/budgets')"
+            @link-bot="() => {}"
+            @logout="handleLogout"
+          />
+        </template>
+        <template #notification>
+          <DNotificationBell />
+        </template>
+        <template #dark-mode-toggle>
+          <DDarkModeToggle :is-dark="isDark" @toggle="toggleDarkMode" />
+        </template>
+      </DPageHeader>
 
-    <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @click.self="showForm = false">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md p-6">
-        <h2 class="text-lg font-bold mb-4 text-slate-800 dark:text-white">
-          {{ editingReminder ? 'Edit' : 'New' }} Bill Reminder
-        </h2>
-        <DBillReminderForm
-          :reminder="editingReminder"
-          :loading="saving"
-          @submit="handleSubmit"
-          @delete="handleDelete"
-        />
+      <!-- Add Button -->
+      <div class="mb-5">
+        <button
+          @click="showForm = true"
+          class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-xl transition-all duration-200 active:scale-95 shadow-md hover:shadow-lg"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Add Reminder
+        </button>
       </div>
-    </div>
 
-    <DBillReminderList
-      :reminders="reminders"
-      :loading="loading"
-      @toggle-active="handleToggleActive"
-    />
-  </NuxtLayout>
+      <!-- Form Dialog -->
+      <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @click.self="showForm = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md p-6">
+          <h2 class="text-lg font-bold mb-4 text-slate-800 dark:text-white">
+            {{ editingReminder ? 'Edit' : 'New' }} Bill Reminder
+          </h2>
+          <DBillReminderForm
+            :reminder="editingReminder"
+            :loading="saving"
+            @submit="handleSubmit"
+            @delete="handleDelete"
+          />
+        </div>
+      </div>
+
+      <!-- Reminders List -->
+      <DBillReminderList
+        :reminders="reminders"
+        :loading="loading"
+        @toggle-active="handleToggleActive"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import type { BillReminder } from '~/modules/reminders/domain/entities/BillReminder'
+import { useRouter } from 'vue-router'
+import type { BillReminder } from '~modules/reminders/domain/entities/BillReminder'
 import { useAuth } from '~shared/composables/useAuth'
 import { useBillReminderRepository } from '~shared/composables/useBillReminderRepository'
 import { useToast } from '~shared/composables/useToast'
-import DBillReminderList from '~/modules/reminders/ui/organisms/DBillReminderList.vue'
-import DBillReminderForm from '~/modules/reminders/ui/molecules/DBillReminderForm.vue'
+import { useDarkMode } from '~shared/composables/useDarkMode'
+import { useSharedHeader } from '~shared/composables/useSharedHeader'
+import DBillReminderList from '~modules/reminders/ui/organisms/DBillReminderList.vue'
+import DBillReminderForm from '~modules/reminders/ui/molecules/DBillReminderForm.vue'
+import DPageHeader from '~shared/ui/organisms/DPageHeader.vue'
+import DActionsMenu from '~shared/ui/molecules/DActionsMenu.vue'
+import DNotificationBell from '~shared/ui/molecules/DNotificationBell.vue'
+import DDarkModeToggle from '~shared/ui/atoms/DDarkModeToggle.vue'
 
-definePageMeta({ layout: 'default' })
+definePageMeta({
+  middleware: [
+    async function (to, from) {
+      if (process.server) return
+      try {
+        const { user, init } = useAuth()
+        if (!user.value) await init()
+        if (!user.value) return navigateTo('/login')
+      } catch (error) {
+        return navigateTo('/login')
+      }
+    }
+  ]
+})
 
-const pageMeta = { title: 'Bill Reminders', subtitle: 'Never miss a payment', icon: 'bell', showBackButton: true, showFAB: false }
-provide('pageMeta', pageMeta)
-
+const router = useRouter()
 const { user } = useAuth()
 const { repository } = useBillReminderRepository()
 const toast = useToast()
+const { isDark, toggle: toggleDarkMode } = useDarkMode()
+const { handleLogout } = useSharedHeader()
 
 const reminders = ref<BillReminder[]>([])
 const loading = ref(false)
 const saving = ref(false)
 const showForm = ref(false)
 const editingReminder = ref<BillReminder | undefined>()
+
+const handleBack = () => router.push('/')
 
 const loadReminders = async () => {
   if (!user.value?.id) return
@@ -74,7 +132,7 @@ const handleSubmit = async (data: Partial<BillReminder>) => {
         frequency: data.frequency!, nextDueDate: data.nextDueDate!,
         reminderDays: data.reminderDays || 3, isActive: true,
         notes: data.notes, createdAt: new Date(), updatedAt: new Date()
-      })
+      } as BillReminder)
       toast.success('Reminder created')
     }
     showForm.value = false

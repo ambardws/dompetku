@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BillReminder } from '~/modules/reminders/domain/entities/BillReminder'
+import type { BillReminder } from '~modules/reminders/domain/entities/BillReminder'
 import DBillReminderCard from '../molecules/DBillReminderCard.vue'
 
 interface Props { reminders: BillReminder[]; loading?: boolean }

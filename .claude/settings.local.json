@@ -10,9 +10,20 @@
       "Bash(ngrok version:*)",
       "Bash(ngrok http:*)",
       "Bash(curl:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'feat\\(recurring\\): add UI components and page for recurring transactions *)",
+      "Bash(git commit -m 'feat\\(reminders\\): add UI components and page for bill reminders *)",
+      "Bash(git commit -m 'feat\\(insights\\): add UI components and page for financial insights *)",
+      "Bash(git commit -m 'feat\\(receipt-scanner\\): integrate scanned receipt data into transaction form *)",
+      "Bash(npx nuxi *)",
+      "Bash(npx vue-tsc *)",
+      "Bash(git commit -m 'feat: add feature completeness pages with proper UI template *)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "disabledMcpjsonServers": [
+    "code-review-graph"
+  ]
 }

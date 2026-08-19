@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Insight } from '~/modules/insights/domain/entities/FinancialInsight'
+import type { Insight } from '~modules/insights/domain/entities/FinancialInsight'
 import DInsightCard from '../molecules/DInsightCard.vue'
 
 interface Props { insights: Insight[]; loading?: boolean }
