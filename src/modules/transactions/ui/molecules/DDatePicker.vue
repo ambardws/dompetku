@@ -116,8 +116,8 @@
             </div>
 
             <!-- Calendar Days (Fixed Height - 6 rows = 42 cells) -->
-            <div class="px-2 py-3 h-[280px] sm:h-[300px]">
-              <div class="grid grid-cols-7 gap-0.5 h-full">
+            <div class="px-2 py-3">
+              <div class="grid grid-cols-7 gap-0.5">
                 <!-- Empty cells for first week padding -->
                 <div
                   v-for="n in firstDayOfWeek"
@@ -131,7 +131,7 @@
                   :key="date.day"
                   type="button"
                   :class="[
-                    'aspect-square rounded-lg text-sm font-medium transition-all duration-150 relative',
+                    'aspect-square rounded-lg text-sm font-medium transition-all duration-150 relative flex items-center justify-center',
                     date.isToday && !date.isSelected
                       ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 font-semibold'
                       : 'hover:bg-gray-100 dark:hover:bg-gray-700',

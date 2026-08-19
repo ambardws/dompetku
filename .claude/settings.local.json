@@ -18,7 +18,9 @@
       "Bash(git commit -m 'feat\\(receipt-scanner\\): integrate scanned receipt data into transaction form *)",
       "Bash(npx nuxi *)",
       "Bash(npx vue-tsc *)",
-      "Bash(git commit -m 'feat: add feature completeness pages with proper UI template *)"
+      "Bash(git commit -m 'feat: add feature completeness pages with proper UI template *)",
+      "Bash(git commit -m 'feat\\(nav\\): add Reminders and Insights to bottom navigation *)",
+      "Bash(git commit -m 'fix\\(ui\\): remove fixed height from calendar grid to prevent overflow *)"
     ],
     "deny": [],
     "ask": []
