@@ -22,7 +22,9 @@
       "Bash(git commit -m 'feat\\(nav\\): add Reminders and Insights to bottom navigation *)",
       "Bash(git commit -m 'fix\\(ui\\): remove fixed height from calendar grid to prevent overflow *)",
       "Bash(git commit -m 'fix\\(db\\): don'\\\\''t pass empty UUID when creating new records *)",
-      "Bash(git commit -m 'fix\\(ui\\): use existing DDatePicker component in forms *)"
+      "Bash(git commit -m 'fix\\(ui\\): use existing DDatePicker component in forms *)",
+      "Bash(npx supabase *)",
+      "Bash(git commit -m 'fix: add database types and recurring transactions link *)"
     ],
     "deny": [],
     "ask": []
