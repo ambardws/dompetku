@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-950 pb-20 transition-colors">
+  <div class="bg-gray-100 dark:bg-gray-950 pb-16 transition-colors">
     <div class="w-full bg-white dark:bg-gray-900 min-h-screen px-4 py-6 sm:py-8 pb-24">
       <!-- Page Header -->
       <DPageHeader
