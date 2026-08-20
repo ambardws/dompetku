@@ -5,12 +5,14 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { GetBudgetStatusUseCase } from './GetBudgetStatusUseCase'
 import type { BudgetRepository } from '../../domain/repositories/BudgetRepository'
 import type { TransactionRepository } from '~modules/transactions/domain/repositories/TransactionRepository'
+import type { CategoryRepository } from '~modules/categories/domain/repositories/CategoryRepository'
 import type { Budget, GetBudgetStatusInput } from '../../domain/entities/Budget'
 import type { Transaction } from '~modules/transactions/domain/entities/Transaction'
 
 describe('GetBudgetStatusUseCase', () => {
   let mockBudgetRepository: BudgetRepository
   let mockTransactionRepository: TransactionRepository
+  let mockCategoryRepository: CategoryRepository
   let useCase: GetBudgetStatusUseCase
 
   const mockBudget: Budget = {
@@ -19,6 +21,18 @@ describe('GetBudgetStatusUseCase', () => {
     categoryId: 'cat-food',
     amount: 1000000,
     period: 'monthly',
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01')
+  }
+
+  const mockCategory = {
+    id: 'cat-food',
+    userId: 'user-123',
+    name: 'Makan',
+    icon: '🍔',
+    color: '#FF0000',
+    type: 'expense' as const,
+    isDefault: false,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01')
   }
@@ -42,7 +56,15 @@ describe('GetBudgetStatusUseCase', () => {
       search: vi.fn()
     }
 
-    useCase = new GetBudgetStatusUseCase(mockBudgetRepository, mockTransactionRepository)
+    mockCategoryRepository = {
+      add: vi.fn(),
+      getById: vi.fn().mockResolvedValue(mockCategory),
+      getByUserId: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn()
+    }
+
+    useCase = new GetBudgetStatusUseCase(mockBudgetRepository, mockTransactionRepository, mockCategoryRepository)
   })
 
   describe('execute', () => {
@@ -253,7 +275,7 @@ describe('GetBudgetStatusUseCase', () => {
 
       expect(mockTransactionRepository.search).toHaveBeenCalledWith({
         userId: 'user-123',
-        categoryId: 'cat-food',
+        query: 'Makan', // uses category name, not categoryId
         type: 'expense',
         dateFrom: validInput.startDate,
         dateTo: validInput.endDate

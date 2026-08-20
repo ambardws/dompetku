@@ -39,7 +39,7 @@ describe('GetTrendDataUseCase', () => {
           type: 'income',
           amount: 5000000,
           category: 'Gaji',
-          createdAt: new Date('2024-01-15')
+          transactionDate: new Date('2024-01-15')
         },
         {
           id: '2',
@@ -47,7 +47,7 @@ describe('GetTrendDataUseCase', () => {
           type: 'expense',
           amount: 1000000,
           category: 'Makan',
-          createdAt: new Date('2024-01-20')
+          transactionDate: new Date('2024-01-20')
         },
         {
           id: '3',
@@ -55,7 +55,7 @@ describe('GetTrendDataUseCase', () => {
           type: 'income',
           amount: 5000000,
           category: 'Gaji',
-          createdAt: new Date('2024-02-15')
+          transactionDate: new Date('2024-02-15')
         }
       ]
 
