@@ -27,12 +27,12 @@
         </template>
       </DPageHeader>
 
-      <!-- Add Button (Minimalist) -->
+      <!-- Add Button -->
       <button
         @click="showForm = true"
-        class="inline-flex items-center gap-2 px-3 py-2 mb-4 text-sm text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg border border-amber-200 dark:border-amber-800 transition-all duration-200"
+        class="w-full flex items-center justify-center gap-2 px-4 py-3 mb-4 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-xl transition-all duration-200 active:scale-95 shadow-md hover:shadow-lg"
       >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
         Add Reminder
