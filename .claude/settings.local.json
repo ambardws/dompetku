@@ -24,7 +24,8 @@
       "Bash(git commit -m 'fix\\(db\\): don'\\\\''t pass empty UUID when creating new records *)",
       "Bash(git commit -m 'fix\\(ui\\): use existing DDatePicker component in forms *)",
       "Bash(npx supabase *)",
-      "Bash(git commit -m 'fix: add database types and recurring transactions link *)"
+      "Bash(git commit -m 'fix: add database types and recurring transactions link *)",
+      "Bash(git commit -m 'ui: minimalize recurring button and add Budgets to nav *)"
     ],
     "deny": [],
     "ask": []
