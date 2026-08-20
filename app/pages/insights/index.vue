@@ -82,7 +82,7 @@ definePageMeta({
 
 const router = useRouter()
 const { user } = useAuth()
-const { repository: transactionRepository } = useTransactionRepository()
+const transactionRepository = useTransactionRepository()
 const { isDark, toggle: toggleDarkMode } = useDarkMode()
 const { handleLogout } = useSharedHeader()
 
